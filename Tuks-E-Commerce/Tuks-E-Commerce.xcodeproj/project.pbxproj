@@ -1,0 +1,639 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7D6295902F338B4E006CC0AB /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 7D62958F2F338B4E006CC0AB /* SnapKit */; };
+		7D6295932F338B5F006CC0AB /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 7D6295922F338B5F006CC0AB /* Kingfisher */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7D6295702F338748006CC0AB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7D6295512F338747006CC0AB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7D6295582F338747006CC0AB;
+			remoteInfo = "Tuks-E-Commerce";
+		};
+		7D62957A2F338748006CC0AB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7D6295512F338747006CC0AB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7D6295582F338747006CC0AB;
+			remoteInfo = "Tuks-E-Commerce";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		7D6295592F338747006CC0AB /* Tuks-E-Commerce.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Tuks-E-Commerce.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D62956F2F338748006CC0AB /* Tuks-E-CommerceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Tuks-E-CommerceTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7D6295792F338748006CC0AB /* Tuks-E-CommerceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Tuks-E-CommerceUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		7D6295812F338748006CC0AB /* Exceptions for "Tuks-E-Commerce" folder in "Tuks-E-Commerce" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 7D6295582F338747006CC0AB /* Tuks-E-Commerce */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		7D62955B2F338747006CC0AB /* Tuks-E-Commerce */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				7D6295812F338748006CC0AB /* Exceptions for "Tuks-E-Commerce" folder in "Tuks-E-Commerce" target */,
+			);
+			path = "Tuks-E-Commerce";
+			sourceTree = "<group>";
+		};
+		7D6295722F338748006CC0AB /* Tuks-E-CommerceTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Tuks-E-CommerceTests";
+			sourceTree = "<group>";
+		};
+		7D62957C2F338748006CC0AB /* Tuks-E-CommerceUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Tuks-E-CommerceUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7D6295562F338747006CC0AB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7D6295932F338B5F006CC0AB /* Kingfisher in Frameworks */,
+				7D6295902F338B4E006CC0AB /* SnapKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D62956C2F338748006CC0AB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D6295762F338748006CC0AB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7D6295502F338747006CC0AB = {
+			isa = PBXGroup;
+			children = (
+				7D62955B2F338747006CC0AB /* Tuks-E-Commerce */,
+				7D6295722F338748006CC0AB /* Tuks-E-CommerceTests */,
+				7D62957C2F338748006CC0AB /* Tuks-E-CommerceUITests */,
+				7D62955A2F338747006CC0AB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7D62955A2F338747006CC0AB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7D6295592F338747006CC0AB /* Tuks-E-Commerce.app */,
+				7D62956F2F338748006CC0AB /* Tuks-E-CommerceTests.xctest */,
+				7D6295792F338748006CC0AB /* Tuks-E-CommerceUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7D6295582F338747006CC0AB /* Tuks-E-Commerce */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7D6295822F338748006CC0AB /* Build configuration list for PBXNativeTarget "Tuks-E-Commerce" */;
+			buildPhases = (
+				7D6295552F338747006CC0AB /* Sources */,
+				7D6295562F338747006CC0AB /* Frameworks */,
+				7D6295572F338747006CC0AB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				7D62955B2F338747006CC0AB /* Tuks-E-Commerce */,
+			);
+			name = "Tuks-E-Commerce";
+			packageProductDependencies = (
+				7D62958F2F338B4E006CC0AB /* SnapKit */,
+				7D6295922F338B5F006CC0AB /* Kingfisher */,
+			);
+			productName = "Tuks-E-Commerce";
+			productReference = 7D6295592F338747006CC0AB /* Tuks-E-Commerce.app */;
+			productType = "com.apple.product-type.application";
+		};
+		7D62956E2F338748006CC0AB /* Tuks-E-CommerceTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7D6295872F338748006CC0AB /* Build configuration list for PBXNativeTarget "Tuks-E-CommerceTests" */;
+			buildPhases = (
+				7D62956B2F338748006CC0AB /* Sources */,
+				7D62956C2F338748006CC0AB /* Frameworks */,
+				7D62956D2F338748006CC0AB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7D6295712F338748006CC0AB /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				7D6295722F338748006CC0AB /* Tuks-E-CommerceTests */,
+			);
+			name = "Tuks-E-CommerceTests";
+			packageProductDependencies = (
+			);
+			productName = "Tuks-E-CommerceTests";
+			productReference = 7D62956F2F338748006CC0AB /* Tuks-E-CommerceTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		7D6295782F338748006CC0AB /* Tuks-E-CommerceUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7D62958A2F338748006CC0AB /* Build configuration list for PBXNativeTarget "Tuks-E-CommerceUITests" */;
+			buildPhases = (
+				7D6295752F338748006CC0AB /* Sources */,
+				7D6295762F338748006CC0AB /* Frameworks */,
+				7D6295772F338748006CC0AB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7D62957B2F338748006CC0AB /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				7D62957C2F338748006CC0AB /* Tuks-E-CommerceUITests */,
+			);
+			name = "Tuks-E-CommerceUITests";
+			packageProductDependencies = (
+			);
+			productName = "Tuks-E-CommerceUITests";
+			productReference = 7D6295792F338748006CC0AB /* Tuks-E-CommerceUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7D6295512F338747006CC0AB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2620;
+				LastUpgradeCheck = 2620;
+				TargetAttributes = {
+					7D6295582F338747006CC0AB = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					7D62956E2F338748006CC0AB = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 7D6295582F338747006CC0AB;
+					};
+					7D6295782F338748006CC0AB = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 7D6295582F338747006CC0AB;
+					};
+				};
+			};
+			buildConfigurationList = 7D6295542F338747006CC0AB /* Build configuration list for PBXProject "Tuks-E-Commerce" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 7D6295502F338747006CC0AB;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				7D62958E2F338B4E006CC0AB /* XCRemoteSwiftPackageReference "SnapKit" */,
+				7D6295912F338B5F006CC0AB /* XCRemoteSwiftPackageReference "Kingfisher" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7D62955A2F338747006CC0AB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7D6295582F338747006CC0AB /* Tuks-E-Commerce */,
+				7D62956E2F338748006CC0AB /* Tuks-E-CommerceTests */,
+				7D6295782F338748006CC0AB /* Tuks-E-CommerceUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7D6295572F338747006CC0AB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D62956D2F338748006CC0AB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D6295772F338748006CC0AB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7D6295552F338747006CC0AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D62956B2F338748006CC0AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7D6295752F338748006CC0AB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7D6295712F338748006CC0AB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7D6295582F338747006CC0AB /* Tuks-E-Commerce */;
+			targetProxy = 7D6295702F338748006CC0AB /* PBXContainerItemProxy */;
+		};
+		7D62957B2F338748006CC0AB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7D6295582F338747006CC0AB /* Tuks-E-Commerce */;
+			targetProxy = 7D62957A2F338748006CC0AB /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		7D6295832F338748006CC0AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KK2LG57YLW;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Tuks-E-Commerce/Info.plist";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.narminalasova.Tuks-E-Commerce";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7D6295842F338748006CC0AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KK2LG57YLW;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Tuks-E-Commerce/Info.plist";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.narminalasova.Tuks-E-Commerce";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		7D6295852F338748006CC0AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = KK2LG57YLW;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		7D6295862F338748006CC0AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = KK2LG57YLW;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7D6295882F338748006CC0AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KK2LG57YLW;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.narminalasova.Tuks-E-CommerceTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tuks-E-Commerce.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tuks-E-Commerce";
+			};
+			name = Debug;
+		};
+		7D6295892F338748006CC0AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KK2LG57YLW;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.narminalasova.Tuks-E-CommerceTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Tuks-E-Commerce.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Tuks-E-Commerce";
+			};
+			name = Release;
+		};
+		7D62958B2F338748006CC0AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KK2LG57YLW;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.narminalasova.Tuks-E-CommerceUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Tuks-E-Commerce";
+			};
+			name = Debug;
+		};
+		7D62958C2F338748006CC0AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KK2LG57YLW;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.narminalasova.Tuks-E-CommerceUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Tuks-E-Commerce";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7D6295542F338747006CC0AB /* Build configuration list for PBXProject "Tuks-E-Commerce" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D6295852F338748006CC0AB /* Debug */,
+				7D6295862F338748006CC0AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7D6295822F338748006CC0AB /* Build configuration list for PBXNativeTarget "Tuks-E-Commerce" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D6295832F338748006CC0AB /* Debug */,
+				7D6295842F338748006CC0AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7D6295872F338748006CC0AB /* Build configuration list for PBXNativeTarget "Tuks-E-CommerceTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D6295882F338748006CC0AB /* Debug */,
+				7D6295892F338748006CC0AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7D62958A2F338748006CC0AB /* Build configuration list for PBXNativeTarget "Tuks-E-CommerceUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D62958B2F338748006CC0AB /* Debug */,
+				7D62958C2F338748006CC0AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7D62958E2F338B4E006CC0AB /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+		7D6295912F338B5F006CC0AB /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.6.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7D62958F2F338B4E006CC0AB /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7D62958E2F338B4E006CC0AB /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+		7D6295922F338B5F006CC0AB /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7D6295912F338B5F006CC0AB /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 7D6295512F338747006CC0AB /* Project object */;
+}
