@@ -179,16 +179,6 @@ class RegisterApproveController: UIViewController {
     }
     
     private func navigateToLogin() {
-        let loginVC = LoginController()
-        let navController = UINavigationController(rootViewController: loginVC)
-        navController.modalPresentationStyle = .fullScreen
-        
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first {
-            window.rootViewController = navController
-            window.makeKeyAndVisible()
-            
-            UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
-        }
+        navigationController?.popToRootViewController(animated: true)
     }
 }
