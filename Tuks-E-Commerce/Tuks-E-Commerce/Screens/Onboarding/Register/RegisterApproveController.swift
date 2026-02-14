@@ -24,14 +24,8 @@ class RegisterApproveController: UIViewController {
         label.font = .systemFont(ofSize: 15)
         label.textColor = .gray
         
-        let fullText = "We sent a code to arfi.ganteng@gmail.com."
+        let fullText = "We sent a code to your email."
         let attributedString = NSMutableAttributedString(string: fullText)
-        
-        if let emailRange = fullText.range(of: "arfi.ganteng@gmail.com") {
-            let nsRange = NSRange(emailRange, in: fullText)
-            attributedString.addAttribute(.foregroundColor, value: UIColor.black, range: nsRange)
-            attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 15, weight: .medium), range: nsRange)
-        }
         
         label.attributedText = attributedString
         return label
@@ -78,13 +72,25 @@ class RegisterApproveController: UIViewController {
         return button
     }()
     
+    let viewModel: RegisterApproveViewModel
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
         setupActions()
+        bindViewModel()
         
         codeTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+    }
+    
+    init(viewModel: RegisterApproveViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func setupUI() {
@@ -172,10 +178,35 @@ class RegisterApproveController: UIViewController {
     }
     
     @objc private func continueTapped() {
-        let successVC = SuccessViewController.accountCreated { [weak self] in
-            self?.navigateToLogin()
+        guard let code = codeTextField.text, !code.isEmpty else {
+            self.present(
+                AlertHelper.showAlert(title: "Warning!",message: "Code input must be non-empty!"),
+                animated: true
+            )
+            return
         }
-        navigationController?.pushViewController(successVC, animated: true)
+        
+        let body = RegisterApproveRequest(code: code)
+        viewModel.registerApprove(body: body)
+    }
+    
+    private func bindViewModel() {
+        viewModel.approveSuccess = { [weak self] in
+            guard let self else { return }
+            
+            let successVC = SuccessViewController.accountCreated { [weak self] in
+                self?.navigateToLogin()
+            }
+            navigationController?.pushViewController(successVC, animated: true)
+        }
+        
+        viewModel.errorHandling = { [weak self] errorText in
+            guard let self else { return }
+            self.present(
+                AlertHelper.showAlert(title: "Warning!",message: errorText),
+                animated: true
+            )
+        }
     }
     
     private func navigateToLogin() {

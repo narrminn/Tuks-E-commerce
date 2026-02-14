@@ -225,7 +225,9 @@ class LoginController: UIViewController {
     }
     
     @objc private func createAccountTapped() {
-        let registerVC = RegisterController()
+        let registerVC = RegisterController(
+            viewModel: RegisterViewModel(networkService: DefaultNetworkService()),
+        )
         navigationController?.pushViewController(registerVC, animated: true)
     }
     
