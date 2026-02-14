@@ -180,7 +180,7 @@ class RegisterApproveController: UIViewController {
     @objc private func continueTapped() {
         guard let code = codeTextField.text, !code.isEmpty else {
             self.present(
-                AlertHelper.showAlert(title: "Warning!",message: "Code input must be non-empty!"),
+                AlertHelper.showAlert(title: "Warning!", message: "Code input must be non-empty!"),
                 animated: true
             )
             return
@@ -203,7 +203,7 @@ class RegisterApproveController: UIViewController {
         viewModel.errorHandling = { [weak self] errorText in
             guard let self else { return }
             self.present(
-                AlertHelper.showAlert(title: "Warning!",message: errorText),
+                AlertHelper.showAlert(title: "Warning!", message: errorText),
                 animated: true
             )
         }

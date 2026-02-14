@@ -297,7 +297,7 @@ class RegisterController: UIViewController {
          
         else {
             self.present(
-                AlertHelper.showAlert(title: "Warning!",message: "All input fields must be non-empty"),
+                AlertHelper.showAlert(title: "Warning!", message: "All input fields must be non-empty"),
                 animated: true
             )
             
@@ -332,7 +332,7 @@ class RegisterController: UIViewController {
         viewModel.errorHandling = { [weak self] errorText in
             guard let self else { return }
             self.present(
-                AlertHelper.showAlert(title: "Warning!",message: errorText),
+                AlertHelper.showAlert(title: "Warning!", message: errorText),
                 animated: true
             )
         }

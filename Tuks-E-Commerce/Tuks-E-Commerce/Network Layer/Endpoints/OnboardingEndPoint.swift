@@ -3,6 +3,9 @@ import Foundation
 enum OnboardingEndPoint {
     case register(body: RegisterRequest)
     case registerApprove(userId: Int, body: RegisterApproveRequest)
+    
+    case forgotPassword(body: ForgotPasswordRequest)
+    case forgotPasswordConfirm(body: ForgotPasswordConfirmRequest)
 }
 
 extension OnboardingEndPoint: Endpoint {
@@ -14,14 +17,18 @@ extension OnboardingEndPoint: Endpoint {
         switch self {
         case .register:
             return "/api/register"
-        case .registerApprove(let userId, let body):
+        case .registerApprove(let userId, _):
             return "/api/register/approve/\(userId)"
+        case .forgotPassword(_):
+            return "/api/forgot-password"
+        case .forgotPasswordConfirm(let body):
+            return "/api/forgot-password/confirm"
         }
     }
 
     var method: HttpMethod {
         switch self {
-        case .register, .registerApprove:
+        case .register, .registerApprove, .forgotPassword, .forgotPasswordConfirm:
             return .post
         }
     }
@@ -41,7 +48,11 @@ extension OnboardingEndPoint: Endpoint {
         switch self {
         case .register(let body):
             return body
-        case .registerApprove(let userId, let body):
+        case .registerApprove(_, let body):
+            return body
+        case .forgotPassword(let body):
+            return body
+        case .forgotPasswordConfirm(let body):
             return body
         }
     }

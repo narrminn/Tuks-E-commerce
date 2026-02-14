@@ -120,6 +120,13 @@ class LoginController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupActions()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(showPasswordChangedAlert),
+            name: .passwordChanged,
+            object: nil
+        )
     }
     
     private func setupUI() {
@@ -220,7 +227,9 @@ class LoginController: UIViewController {
     }
     
     @objc private func forgotPasswordTapped() {
-        let forgotPasswordVC = ForgotPasswordController()
+        let networkService = DefaultNetworkService()
+        let forgotPasswordViewModel = ForgotPasswordViewModel(networkService: networkService)
+        let forgotPasswordVC = ForgotPasswordController(viewModel: forgotPasswordViewModel)
             navigationController?.pushViewController(forgotPasswordVC, animated: true)
     }
     
@@ -229,6 +238,19 @@ class LoginController: UIViewController {
             viewModel: RegisterViewModel(networkService: DefaultNetworkService()),
         )
         navigationController?.pushViewController(registerVC, animated: true)
+    }
+    
+    @objc private func showPasswordChangedAlert() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self else { return }
+            self.present(
+                AlertHelper.showAlert(
+                    title: "Success",
+                    message: "Your password has been changed successfully!"
+                ),
+                animated: true
+            )
+        }
     }
     
     @objc private func signInTapped() {

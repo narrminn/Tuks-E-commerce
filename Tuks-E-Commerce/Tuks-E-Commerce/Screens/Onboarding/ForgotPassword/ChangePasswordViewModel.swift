@@ -1,30 +1,33 @@
 import Foundation
 
-final class RegisterApproveViewModel {
-    let userId: Int
+final class ChangePasswordViewModel {
+    let email: String
+    
     let networkService: NetworkService
     
-    var approveSuccess: (() -> Void)?
+    var changePasswordSuccess: (() -> Void)?
     var errorHandling: ((String) -> Void)?
     
-    init(networkService: NetworkService, userId: Int) {
+    init(email: String, networkService: NetworkService) {
         self.networkService = networkService
-        self.userId = userId
+        self.email = email
     }
     
-    func registerApprove(body: RegisterApproveRequest) {
+    func confirmPassword(body: ForgotPasswordConfirmRequest) {
         Task {
             do {
-                let _: SuccessResponse = try await networkService.request(
-                    OnboardingEndPoint.registerApprove(userId: userId, body: body)
+                
+                let _ : SuccessResponse = try await networkService.request(
+                    OnboardingEndPoint.forgotPasswordConfirm(body: body)
                 )
                 
                 await MainActor.run { [weak self] in
                     guard let self else { return }
-                    self.approveSuccess?()
+                    self.changePasswordSuccess?()
                 }
                 
             } catch {
+                
                 await MainActor.run { [weak self] in
                     guard let self else { return }
                     self.errorHandling?(error.localizedDescription)
@@ -32,4 +35,5 @@ final class RegisterApproveViewModel {
             }
         }
     }
+    
 }
