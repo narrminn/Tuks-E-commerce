@@ -49,13 +49,25 @@ class ForgotPasswordController: UIViewController {
         return button
     }()
     
+    let viewModel: ForgotPasswordViewModel
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
         setupActions()
+        bindViewModel()
         
         emailTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+    }
+    
+    init(viewModel: ForgotPasswordViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func setupUI() {
@@ -128,7 +140,40 @@ class ForgotPasswordController: UIViewController {
     }
     
     @objc private func submitTapped() {
-        let changePasswordVC = ChangePasswordController()
-        navigationController?.pushViewController(changePasswordVC, animated: true)
+        
+        guard let email = emailTextField.text, !email.isEmpty else {
+            
+            self.present(
+                AlertHelper.showAlert(title: "Warning!", message: "Email input must be non-empty!"),
+                animated: true
+            )
+            
+            return
+        }
+                
+        let body = ForgotPasswordRequest(email: email)
+        viewModel.forgotPassword(body: body)
+    }
+    
+    private func bindViewModel() {
+        viewModel.forgotPasswordSuccess = {[weak self]  email in
+            guard let self else { return }
+            
+            let networkService = DefaultNetworkService()
+            let changePasswordViewModel = ChangePasswordViewModel(
+                email: email,
+                networkService: networkService
+            )
+            let changePasswordVC = ChangePasswordController(viewModel: changePasswordViewModel)
+            navigationController?.pushViewController(changePasswordVC, animated: true)
+        }
+        
+        viewModel.errorHandling = { [weak self] errorText in
+            guard let self else { return }
+            self.present(
+                AlertHelper.showAlert(title: "Warning!", message: errorText),
+                animated: true
+            )
+        }
     }
 }

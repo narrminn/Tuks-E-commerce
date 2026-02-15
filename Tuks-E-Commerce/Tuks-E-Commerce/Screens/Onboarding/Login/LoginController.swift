@@ -116,10 +116,29 @@ class LoginController: UIViewController {
         return iv
     }()
     
+    let viewModel: LoginViewModel
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupActions()
+        bindViewModel()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(showPasswordChangedAlert),
+            name: .passwordChanged,
+            object: nil
+        )
+    }
+    
+    init(viewModel: LoginViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func setupUI() {
@@ -220,16 +239,94 @@ class LoginController: UIViewController {
     }
     
     @objc private func forgotPasswordTapped() {
-        let forgotPasswordVC = ForgotPasswordController()
+        let networkService = DefaultNetworkService()
+        let forgotPasswordViewModel = ForgotPasswordViewModel(networkService: networkService)
+        let forgotPasswordVC = ForgotPasswordController(viewModel: forgotPasswordViewModel)
             navigationController?.pushViewController(forgotPasswordVC, animated: true)
     }
     
     @objc private func createAccountTapped() {
-        let registerVC = RegisterController()
+        let registerVC = RegisterController(
+            viewModel: RegisterViewModel(networkService: DefaultNetworkService()),
+        )
         navigationController?.pushViewController(registerVC, animated: true)
     }
     
+    @objc private func showPasswordChangedAlert() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self else { return }
+            self.present(
+                AlertHelper.showAlert(
+                    title: "Success",
+                    message: "Your password has been changed successfully!"
+                ),
+                animated: true
+            )
+        }
+    }
+    
     @objc private func signInTapped() {
-        //TO DO
+        guard let email = emailTextField.text, !email.isEmpty,
+              let password = passwordTextField.text, !password.isEmpty
+        
+        else {
+            
+            self.present(
+                AlertHelper.showAlert(
+                    title: "Warning!",
+                    message: "All input fields must be non-empty"
+                ),
+                animated: true
+            )
+            
+            return
+        }
+        
+        viewModel.login(body: LoginRequest(email: email, password: password))
+        
+    }
+    
+    private func bindViewModel() {
+        viewModel.loginSuccess = { [weak self ] loginResponseData in
+            guard let self else { return }
+            guard let token = loginResponseData.token else { return }
+            
+            saveUserDefaultsKeys(data: loginResponseData)
+            
+            let _ = KeychainManager.shared.save(key: "token", value: token)
+            
+            //Tabbar yonlendir.
+            print("Salam")
+        }
+        
+        viewModel.errorHandling = { [weak self] errorText in
+            guard let self else { return }
+            
+            self.present(
+                AlertHelper.showAlert(
+                    title: "Warning!",
+                    message: errorText
+                ),
+                animated: true
+            )
+        }
+    }
+    
+    private func saveUserDefaultsKeys(data: LoginResponseData) {
+        UserDefaults.standard.set(data.user?.id, forKey: UserDefaultsKeys.userId)
+        
+        UserDefaults.standard.set(data.user?.name, forKey: UserDefaultsKeys.name)
+        
+        UserDefaults.standard.set(data.user?.surname, forKey: UserDefaultsKeys.surname)
+        
+        UserDefaults.standard.set(data.user?.email, forKey: UserDefaultsKeys.email)
+        
+        UserDefaults.standard.set(data.user?.phone, forKey: UserDefaultsKeys.phone)
+        
+        UserDefaults.standard.set(data.user?.birth, forKey: UserDefaultsKeys.birth)
+        
+        UserDefaults.standard.set(data.user?.profilePhotoPath, forKey: UserDefaultsKeys.profilePhotoPath)
+        
+        UserDefaults.standard.set(data.user?.profilePhotoUUID, forKey: UserDefaultsKeys.profilePhotoUuid)
     }
 }

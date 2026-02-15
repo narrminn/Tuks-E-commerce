@@ -102,14 +102,26 @@ class ChangePasswordController: UIViewController {
     
     private var isPasswordVisible = false
     
+    let viewModel: ChangePasswordViewModel
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
         setupActions()
+        bindViewModel()
         
         codeTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         passwordTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+    }
+    
+    init(viewModel: ChangePasswordViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func setupUI() {
@@ -241,21 +253,43 @@ class ChangePasswordController: UIViewController {
     }
     
     @objc private func submitTapped() {
-        guard let code = codeTextField.text, !code.isEmpty else {
-            // Kod boşdursa xəbərdarlıq göstər
+        guard let code = codeTextField.text, !code.isEmpty,
+              let password = passwordTextField.text, !password.isEmpty
+        
+        else {
             return
         }
         
-        guard let password = passwordTextField.text, !password.isEmpty else {
-            // Şifrə boşdursa xəbərdarlıq göstər
-            return
+        let requestBody = ForgotPasswordConfirmRequest(
+            email: viewModel.email,
+            code: code,
+            password: password
+        )
+        viewModel.confirmPassword(body: requestBody)
+    }
+    
+    private func bindViewModel() {
+        viewModel.changePasswordSuccess = { [weak self] in
+            guard let self else { return }
+            navigateToLogin()
         }
         
-        // Burada kod və şifrə yoxlanışı edilə bilər
-        navigateToLogin()
+        viewModel.errorHandling = { [weak self] errorText in
+            guard let self else { return }
+            
+            self.present(
+                AlertHelper.showAlert(title: "Warning!", message: errorText),
+                animated: true
+            )
+        }
     }
     
     private func navigateToLogin() {
         navigationController?.popToRootViewController(animated: true)
+        
+        NotificationCenter.default.post(
+            name: .passwordChanged,
+            object: nil
+        )
     }
 }

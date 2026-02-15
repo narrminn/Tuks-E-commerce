@@ -152,6 +152,18 @@ class RegisterController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupActions()
+        bindViewModel()
+    }
+    
+    let viewModel: RegisterViewModel
+    
+    init(viewModel: RegisterViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     private func setupUI() {
@@ -277,7 +289,52 @@ class RegisterController: UIViewController {
     }
     
     @objc private func signUpTapped() {
-        let confirmEmailVC = RegisterApproveController()
+        guard let email = emailTextField.text, !email.isEmpty,
+              let name = nameTextField.text, !name.isEmpty,
+              let surname = surnameTextField.text, !surname.isEmpty,
+              let phone = phoneNumberTextField.text, !phone.isEmpty,
+              let password = passwordTextField.text, !password.isEmpty
+         
+        else {
+            self.present(
+                AlertHelper.showAlert(title: "Warning!", message: "All input fields must be non-empty"),
+                animated: true
+            )
+            
+            return
+        }
+        
+        viewModel
+            .registerSubmit(
+                body: RegisterRequest(
+                    email: email,
+                    name: name,
+                    surname: surname,
+                    phone: phone,
+                    password: password
+                )
+            )
+    }
+    
+    private func bindViewModel() {
+        viewModel.userCreated = { [weak self] userId in
+            guard let self else { return }
+            
+            let networkService = DefaultNetworkService()
+            let registerApproveViewModel = RegisterApproveViewModel(
+                networkService: networkService,
+                userId: userId
+            )
+            let confirmEmailVC = RegisterApproveController(viewModel: registerApproveViewModel)
             navigationController?.pushViewController(confirmEmailVC, animated: true)
+        }
+        
+        viewModel.errorHandling = { [weak self] errorText in
+            guard let self else { return }
+            self.present(
+                AlertHelper.showAlert(title: "Warning!", message: errorText),
+                animated: true
+            )
+        }
     }
 }

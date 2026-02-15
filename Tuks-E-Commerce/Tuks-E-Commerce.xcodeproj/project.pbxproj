@@ -53,16 +53,6 @@
 			path = "Tuks-E-Commerce";
 			sourceTree = "<group>";
 		};
-		7D6295722F338748006CC0AB /* Tuks-E-CommerceTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Tuks-E-CommerceTests";
-			sourceTree = "<group>";
-		};
-		7D62957C2F338748006CC0AB /* Tuks-E-CommerceUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Tuks-E-CommerceUITests";
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,8 +86,6 @@
 			isa = PBXGroup;
 			children = (
 				7D62955B2F338747006CC0AB /* Tuks-E-Commerce */,
-				7D6295722F338748006CC0AB /* Tuks-E-CommerceTests */,
-				7D62957C2F338748006CC0AB /* Tuks-E-CommerceUITests */,
 				7D62955A2F338747006CC0AB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -152,9 +140,6 @@
 			dependencies = (
 				7D6295712F338748006CC0AB /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				7D6295722F338748006CC0AB /* Tuks-E-CommerceTests */,
-			);
 			name = "Tuks-E-CommerceTests";
 			packageProductDependencies = (
 			);
@@ -174,9 +159,6 @@
 			);
 			dependencies = (
 				7D62957B2F338748006CC0AB /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				7D62957C2F338748006CC0AB /* Tuks-E-CommerceUITests */,
 			);
 			name = "Tuks-E-CommerceUITests";
 			packageProductDependencies = (
