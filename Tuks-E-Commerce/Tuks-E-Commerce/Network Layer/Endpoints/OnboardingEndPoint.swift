@@ -6,6 +6,8 @@ enum OnboardingEndPoint {
     
     case forgotPassword(body: ForgotPasswordRequest)
     case forgotPasswordConfirm(body: ForgotPasswordConfirmRequest)
+    
+    case login(body: LoginRequest)
 }
 
 extension OnboardingEndPoint: Endpoint {
@@ -21,14 +23,16 @@ extension OnboardingEndPoint: Endpoint {
             return "/api/register/approve/\(userId)"
         case .forgotPassword(_):
             return "/api/forgot-password"
-        case .forgotPasswordConfirm(let body):
+        case .forgotPasswordConfirm(_):
             return "/api/forgot-password/confirm"
+        case .login(let body):
+            return "/api/login"
         }
     }
 
     var method: HttpMethod {
         switch self {
-        case .register, .registerApprove, .forgotPassword, .forgotPasswordConfirm:
+        case .register, .registerApprove, .forgotPassword, .forgotPasswordConfirm, .login:
             return .post
         }
     }
@@ -53,6 +57,8 @@ extension OnboardingEndPoint: Endpoint {
         case .forgotPassword(let body):
             return body
         case .forgotPasswordConfirm(let body):
+            return body
+        case .login(let body):
             return body
         }
     }

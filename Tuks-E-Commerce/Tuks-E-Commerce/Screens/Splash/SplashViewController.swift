@@ -38,7 +38,9 @@ final class SplashViewController: UIViewController {
     }
     
     private func navigateToLogin() {
-        let loginVC = LoginController()
+        let networkService = DefaultNetworkService()
+        let viewModel = LoginViewModel(networkService: networkService)
+        let loginVC = LoginController(viewModel: viewModel)
         navigationController?.setViewControllers([loginVC], animated: true)
     }
 
