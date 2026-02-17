@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: windowScene)
         
-        let splashVC = SplashViewController()
+        let splashVC = MainTabBarController()
         let navController = UINavigationController(rootViewController: splashVC)
         navController.isNavigationBarHidden = true
             
