@@ -14,8 +14,15 @@ final class MainTabBarController: UITabBarController {
     }
 
     private func setupTabs() {
+        let networkService = DefaultNetworkService()
+        let viewModel = HomeViewModel(networkService: networkService)
+        let wishlistViewModel = WishListViewModel(networkService: networkService)
+        
         let homeNav = UINavigationController(
-            rootViewController: HomeViewController(/*viewModel: HomeViewModel()*/)
+            rootViewController: HomeViewController(
+                viewModel: viewModel,
+                wishlistViewModel: wishlistViewModel
+            )
         )
         let storeNav = UINavigationController(
             rootViewController: StoreViewController(/*viewModel: StoreViewModel()*/)

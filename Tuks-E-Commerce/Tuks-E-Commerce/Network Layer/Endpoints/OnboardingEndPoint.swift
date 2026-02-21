@@ -25,7 +25,7 @@ extension OnboardingEndPoint: Endpoint {
             return "/api/forgot-password"
         case .forgotPasswordConfirm(_):
             return "/api/forgot-password/confirm"
-        case .login(let body):
+        case .login(_):
             return "/api/login"
         }
     }

@@ -37,7 +37,7 @@ class LoginController: UIViewController {
     private let forgotPasswordButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("Forgot your password?", for: .normal)
-        btn.setTitleColor(UIColor(red: 0.2, green: 0.3, blue: 0.8, alpha: 1), for: .normal)
+        btn.setTitleColor(.black, for: .normal)
         btn.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         return btn
     }()
@@ -58,7 +58,7 @@ class LoginController: UIViewController {
         let label = UILabel()
         label.text = "Or continue with"
         label.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-        label.textColor = UIColor(red: 0.2, green: 0.3, blue: 0.8, alpha: 1)
+        label.textColor = .label
         label.textAlignment = .center
         return label
     }()
@@ -295,8 +295,7 @@ class LoginController: UIViewController {
             
             let _ = KeychainManager.shared.save(key: "token", value: token)
             
-            //Tabbar yonlendir.
-            print("Salam")
+            navigateToMainApp()
         }
         
         viewModel.errorHandling = { [weak self] errorText in
@@ -310,6 +309,12 @@ class LoginController: UIViewController {
                 animated: true
             )
         }
+    }
+    
+    private func navigateToMainApp() {
+        let tabBar = MainTabBarController()
+        tabBar.modalPresentationStyle = .fullScreen
+        self.present(tabBar, animated: true)
     }
     
     private func saveUserDefaultsKeys(data: LoginResponseData) {

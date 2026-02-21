@@ -7,7 +7,7 @@ class RegisterController: UIViewController {
         let label = UILabel()
         label.text = "Create Account"
         label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
-        label.textColor = UIColor(red: 0.2, green: 0.3, blue: 0.8, alpha: 1)
+        label.textColor = .label
         label.textAlignment = .center
         return label
     }()
@@ -90,7 +90,7 @@ class RegisterController: UIViewController {
         let label = UILabel()
         label.text = "Or continue with"
         label.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-        label.textColor = UIColor(red: 0.2, green: 0.3, blue: 0.8, alpha: 1)
+        label.textColor = .label
         label.textAlignment = .center
         return label
     }()

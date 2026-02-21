@@ -7,7 +7,7 @@ final class TabBarItemView: UIView {
 
     private let icon: String
     private let filledIcon: String
-    private let selectedColor = UIColor(red: 88/255, green: 86/255, blue: 214/255, alpha: 1)
+    private let selectedColor = UIColor(red: 154/255, green: 150/255, blue: 138/255, alpha: 1.0)
 
     private let iconView: UIImageView = {
         let imageView = UIImageView()
