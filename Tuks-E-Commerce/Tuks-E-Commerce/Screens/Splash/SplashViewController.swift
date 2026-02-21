@@ -29,8 +29,8 @@ final class SplashViewController: UIViewController {
     
     private func goNext() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            if UserDefaults.standard.bool(forKey: "isLoggedIn") {
-//                self.navigateToMainApp()
+            if KeychainManager.shared.retrieve(key: "token") != nil {
+                self.navigateToMainApp()
             } else {
                 self.navigateToLogin()
             }
@@ -45,9 +45,9 @@ final class SplashViewController: UIViewController {
     }
 
     private func navigateToMainApp() {
-//        let tabBar = MainTabBarController()
-//        tabBar.modalPresentationStyle = .fullScreen
-//        self.present(tabBar, animated: true)
+        let tabBar = MainTabBarController()
+        tabBar.modalPresentationStyle = .fullScreen
+        self.present(tabBar, animated: true)
     }
 }
 
