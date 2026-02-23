@@ -47,15 +47,15 @@ final class HomeViewController: UIViewController {
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.text = "Narmin Alasova"
-        label.font = .systemFont(ofSize: 20, weight: .bold)
+        label.font = .systemFont(ofSize: 16, weight: .bold)
         label.textColor = .label
         return label
     }()
 
     private let cartButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(systemName: "basket.fill"), for: .normal)
-        button.tintColor = .purple
+        button.setImage(UIImage(named: "bag_logo"), for: .normal)
+        button.tintColor = .label
         return button
     }()
     
@@ -95,8 +95,9 @@ final class HomeViewController: UIViewController {
             profileImageView.loadImage(url: profileImage)
         }
         
-        viewModel.getPopularProduct()
         viewModel.getCompanyList()
+        viewModel.getPopularProduct()
+        
         
     }
     
@@ -134,7 +135,7 @@ final class HomeViewController: UIViewController {
         cartButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-20)
             make.centerY.equalTo(profileImageView)
-            make.size.equalTo(32)
+            make.width.height.equalTo(24)
         }
 
         searchView.snp.makeConstraints { make in
@@ -182,7 +183,7 @@ final class HomeViewController: UIViewController {
     private func bindViewModel() {
         viewModel.fetchProductSuccess = { [weak self] in
             guard let self else { return }
-            collectionView.reloadSections(IndexSet(integer: HomeSection.products.rawValue))
+            self.collectionView.reloadData()
         }
         
         viewModel.errorHandling = { [weak self] errorText in
@@ -212,7 +213,7 @@ final class HomeViewController: UIViewController {
         viewModel.fetchCompanyListSuccess = { [weak self ] in
             guard let self else { return }
             
-            collectionView.reloadSections(IndexSet(integer: HomeSection.brands.rawValue))
+            self.collectionView.reloadData()
         }
     }
 
@@ -224,8 +225,7 @@ final class HomeViewController: UIViewController {
     }
 
     private func switchToSearchTab() {
-        guard let tabBar = tabBarController as? MainTabBarController else { return }
-        tabBar.selectTab(index: 1)
+        tabBarController?.selectedIndex = 1
     }
 }
 

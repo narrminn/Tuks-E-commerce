@@ -15,7 +15,8 @@ struct MockData {
 
     static let bannerImages: [String] = [
         "banner_1",
-        "banner_2"
+        "banner_2",
+        "banner_3"
     ]
 
     static let products: [ProductModel] = [

@@ -28,7 +28,7 @@ final class ProductCollectionViewCell: UICollectionViewCell {
     private let favoriteContainerView: UIView = {
         let view = UIView()
         view.backgroundColor = .white
-        view.layer.cornerRadius = 22
+        view.layer.cornerRadius = 16
         view.clipsToBounds = true
         return view
     }()
@@ -125,13 +125,13 @@ final class ProductCollectionViewCell: UICollectionViewCell {
         }
 
         favoriteContainerView.snp.makeConstraints { make in
-            make.top.trailing.equalToSuperview().inset(16)
-            make.width.height.equalTo(44)
+            make.top.trailing.equalToSuperview().inset(20)
+            make.width.height.equalTo(32)
         }
 
         favoriteButton.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(24)
+            make.width.height.equalTo(16)
         }
 
         nameLabel.snp.makeConstraints { make in

@@ -20,6 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let window = UIWindow(windowScene: windowScene)
         
+//        KeychainManager.shared.delete(key: "token")
         let splashVC = SplashViewController()
         let navController = UINavigationController(rootViewController: splashVC)
         navController.isNavigationBarHidden = true

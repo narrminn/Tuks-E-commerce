@@ -3,68 +3,44 @@ import SnapKit
 
 final class MainTabBarController: UITabBarController {
 
-    private let customTabBar = CustomTabBarView()
-
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabs()
-        setupCustomTabBar()
-        tabBar.isHidden = true
-        selectTab(index: 0)
+        
+        tabBar.tintColor = .label
+        tabBar.unselectedItemTintColor = .clear
     }
 
     private func setupTabs() {
         let networkService = DefaultNetworkService()
-        let viewModel = HomeViewModel(networkService: networkService)
+        let homeViewModel = HomeViewModel(networkService: networkService)
         let wishlistViewModel = WishListViewModel(networkService: networkService)
         
-        let homeNav = UINavigationController(
-            rootViewController: HomeViewController(
-                viewModel: viewModel,
-                wishlistViewModel: wishlistViewModel
-            )
-        )
-        let storeNav = UINavigationController(
-            rootViewController: StoreViewController(/*viewModel: StoreViewModel()*/)
-        )
-        let wishlistNav = UINavigationController(
-            rootViewController: WishListViewController(/*viewModel: WishlistViewModel()*/)
-        )
-        let profileNav = UINavigationController(
-            rootViewController: ProfileViewController(/*viewModel: ProfileViewModel()*/)
-        )
+        let homeVC = HomeViewController(viewModel: homeViewModel, wishlistViewModel: wishlistViewModel)
+        homeVC.tabBarItem = UITabBarItem(title: "Home",
+                                         image: UIImage(named: "home")?.withRenderingMode(.alwaysOriginal),
+                                         selectedImage: UIImage(named: "selected_home")?.withRenderingMode(.alwaysOriginal))
 
-        viewControllers = [homeNav, storeNav, wishlistNav, profileNav]
-    }
+        let storeVC = StoreViewController()
+        storeVC.tabBarItem = UITabBarItem(title: "Store",
+                                          image: UIImage(named: "store")?.withRenderingMode(.alwaysOriginal),
+                                          selectedImage: UIImage(named: "selected_store")?.withRenderingMode(.alwaysOriginal))
 
-    private func setupCustomTabBar() {
-        view.addSubview(customTabBar)
+        let wishlistVC = WishListViewController()
+        wishlistVC.tabBarItem = UITabBarItem(title: "Wishlist",
+                                              image: UIImage(named: "wishlist")?.withRenderingMode(.alwaysOriginal),
+                                              selectedImage: UIImage(named: "selected_wishlist")?.withRenderingMode(.alwaysOriginal))
 
-        customTabBar.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.bottom.equalToSuperview()
-            make.height.equalTo(86)
-        }
+        let profileVC = ProfileViewController()
+        profileVC.tabBarItem = UITabBarItem(title: "Profile",
+                                             image: UIImage(named: "profile")?.withRenderingMode(.alwaysOriginal),
+                                             selectedImage: UIImage(named: "selected_profile")?.withRenderingMode(.alwaysOriginal))
 
-        customTabBar.onSelect = { [weak self] index in
-            self?.selectTab(index: index)
-        }
-    }
-
-    func selectTab(index: Int) {
-        selectedIndex = index
-        customTabBar.setSelected(index: index)
-    }
-
-    func hideCustomTabBar() {
-        UIView.animate(withDuration: 0.3) {
-            self.customTabBar.transform = CGAffineTransform(translationX: 0, y: 86)
-        }
-    }
-
-    func showCustomTabBar() {
-        UIView.animate(withDuration: 0.3) {
-            self.customTabBar.transform = .identity
-        }
+        viewControllers = [
+            UINavigationController(rootViewController: homeVC),
+            UINavigationController(rootViewController: storeVC),
+            UINavigationController(rootViewController: wishlistVC),
+            UINavigationController(rootViewController: profileVC)
+        ]
     }
 }
