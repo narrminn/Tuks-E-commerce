@@ -239,16 +239,12 @@ class LoginController: UIViewController {
     }
     
     @objc private func forgotPasswordTapped() {
-        let networkService = DefaultNetworkService()
-        let forgotPasswordViewModel = ForgotPasswordViewModel(networkService: networkService)
-        let forgotPasswordVC = ForgotPasswordController(viewModel: forgotPasswordViewModel)
+        let forgotPasswordVC = ForgotPasswordBuilder.build()
             navigationController?.pushViewController(forgotPasswordVC, animated: true)
     }
     
     @objc private func createAccountTapped() {
-        let registerVC = RegisterController(
-            viewModel: RegisterViewModel(networkService: DefaultNetworkService()),
-        )
+        let registerVC = RegisterBuilder.build()
         navigationController?.pushViewController(registerVC, animated: true)
     }
     

@@ -159,12 +159,7 @@ class ForgotPasswordController: UIViewController {
         viewModel.forgotPasswordSuccess = {[weak self]  email in
             guard let self else { return }
             
-            let networkService = DefaultNetworkService()
-            let changePasswordViewModel = ChangePasswordViewModel(
-                email: email,
-                networkService: networkService
-            )
-            let changePasswordVC = ChangePasswordController(viewModel: changePasswordViewModel)
+            let changePasswordVC = ChangePasswordBuilder.build(email: email)
             navigationController?.pushViewController(changePasswordVC, animated: true)
         }
         

@@ -320,12 +320,7 @@ class RegisterController: UIViewController {
         viewModel.userCreated = { [weak self] userId in
             guard let self else { return }
             
-            let networkService = DefaultNetworkService()
-            let registerApproveViewModel = RegisterApproveViewModel(
-                networkService: networkService,
-                userId: userId
-            )
-            let confirmEmailVC = RegisterApproveController(viewModel: registerApproveViewModel)
+            let confirmEmailVC = RegisterApproveBuilder.build(userId: userId)
             navigationController?.pushViewController(confirmEmailVC, animated: true)
         }
         
