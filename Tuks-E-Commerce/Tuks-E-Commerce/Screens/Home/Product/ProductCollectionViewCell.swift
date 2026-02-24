@@ -131,7 +131,7 @@ final class ProductCollectionViewCell: UICollectionViewCell {
 
         favoriteButton.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(16)
+            make.width.height.equalTo(20)
         }
 
         nameLabel.snp.makeConstraints { make in
