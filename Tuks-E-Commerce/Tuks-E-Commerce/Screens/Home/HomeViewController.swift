@@ -10,7 +10,7 @@ final class HomeViewController: UIViewController {
     private lazy var collectionView: UICollectionView = {
         let layout = HomeLayoutFactory.createLayout()
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.backgroundColor = .systemGray5
+        cv.backgroundColor = .systemGray6
 
         cv.showsVerticalScrollIndicator = false
         cv.dataSource = self
@@ -77,7 +77,7 @@ final class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemGray5
+        view.backgroundColor = .systemGray6
         
         addSubviews()
         setupConstraints()
