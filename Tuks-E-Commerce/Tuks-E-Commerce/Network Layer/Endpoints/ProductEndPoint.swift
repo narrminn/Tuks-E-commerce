@@ -4,6 +4,7 @@ enum ProductEndPoint {
     case getPopularProduct(page: Int)
     case addWishlist(id: Int)
     case getWishlist(page: Int)
+    case search(page: Int, keyword: String)
 }
 
 extension ProductEndPoint: Endpoint {
@@ -19,6 +20,8 @@ extension ProductEndPoint: Endpoint {
             return "/api/product/wishlist/update/\(id)"
         case .getWishlist:
             return "/api/product/wishlist/index"
+        case .search:
+            return "/api/product/search"
         }
     }
 
@@ -29,6 +32,8 @@ extension ProductEndPoint: Endpoint {
         case .addWishlist:
             return .post
         case .getWishlist:
+            return .get
+        case .search:
             return .get
         }
     }
@@ -46,6 +51,11 @@ extension ProductEndPoint: Endpoint {
         case .getPopularProduct(let page), .getWishlist(let page):
             return [
                 URLQueryItem(name: "page", value: "\(page)")
+            ]
+        case .search(let page, let keyword):
+            return [
+                URLQueryItem(name: "page", value: "\(page)"),
+                URLQueryItem(name: "keyword", value: "\(keyword)")
             ]
         default:
             return nil
