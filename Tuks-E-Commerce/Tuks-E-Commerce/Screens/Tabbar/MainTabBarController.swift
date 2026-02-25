@@ -26,7 +26,7 @@ final class MainTabBarController: UITabBarController {
                                           image: UIImage(named: "store")?.withRenderingMode(.alwaysOriginal),
                                           selectedImage: UIImage(named: "selected_store")?.withRenderingMode(.alwaysOriginal))
 
-        let wishlistVC = WishListViewController()
+        let wishlistVC = WishListViewController(viewModel: wishlistViewModel)
         wishlistVC.tabBarItem = UITabBarItem(title: "Wishlist",
                                               image: UIImage(named: "wishlist")?.withRenderingMode(.alwaysOriginal),
                                               selectedImage: UIImage(named: "selected_wishlist")?.withRenderingMode(.alwaysOriginal))

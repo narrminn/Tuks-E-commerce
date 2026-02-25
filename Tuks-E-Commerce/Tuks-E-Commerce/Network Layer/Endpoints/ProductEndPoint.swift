@@ -3,6 +3,7 @@ import Foundation
 enum ProductEndPoint {
     case getPopularProduct(page: Int)
     case addWishlist(id: Int)
+    case getWishlist(page: Int)
 }
 
 extension ProductEndPoint: Endpoint {
@@ -16,6 +17,8 @@ extension ProductEndPoint: Endpoint {
             return "/api/product/popular"
         case .addWishlist(let id):
             return "/api/product/wishlist/update/\(id)"
+        case .getWishlist:
+            return "/api/product/wishlist/index"
         }
     }
 
@@ -25,6 +28,8 @@ extension ProductEndPoint: Endpoint {
             return .get
         case .addWishlist:
             return .post
+        case .getWishlist:
+            return .get
         }
     }
 
@@ -38,11 +43,10 @@ extension ProductEndPoint: Endpoint {
 
     var queryItems: [URLQueryItem]? {
         switch self {
-        case .getPopularProduct(let page):
+        case .getPopularProduct(let page), .getWishlist(let page):
             return [
                 URLQueryItem(name: "page", value: "\(page)")
             ]
-            
         default:
             return nil
         }

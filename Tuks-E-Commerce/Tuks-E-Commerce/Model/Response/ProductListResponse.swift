@@ -15,7 +15,7 @@ struct Product: Codable, ProductProtocol {
     let name, companyName: String
     let price: Double
     let mainPhoto: String
-    let isWishlist: Bool
+    var isWishlist: Bool
 
     enum CodingKeys: String, CodingKey {
         case id, name
