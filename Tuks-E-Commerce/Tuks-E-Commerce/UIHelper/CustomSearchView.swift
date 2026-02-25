@@ -4,6 +4,7 @@ import SnapKit
 final class CustomSearchView: UIView {
 
     var onSearchTapped: (() -> Void)?
+    var onTextChanged: ((String) -> Void)?
 
     var isEditable: Bool = false {
         didSet {
@@ -22,7 +23,7 @@ final class CustomSearchView: UIView {
     let textField: UITextField = {
         let textField = UITextField()
         textField.placeholder = "Search"
-        textField.textColor = .white
+        textField.textColor = .label
         textField.attributedPlaceholder = NSAttributedString(
             string: "Search",
             attributes: [
@@ -43,6 +44,8 @@ final class CustomSearchView: UIView {
         addSubviews()
         setupConstraints()
         addTapGesture()
+        
+        textField.delegate = self
     }
 
     required init?(coder: NSCoder) {
@@ -83,5 +86,13 @@ final class CustomSearchView: UIView {
 
     @objc private func searchTapped() {
         onSearchTapped?()
+    }
+}
+
+extension CustomSearchView: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let current = (textField.text as NSString?)?.replacingCharacters(in: range, with: string) ?? ""
+        onTextChanged?(current)
+        return true
     }
 }

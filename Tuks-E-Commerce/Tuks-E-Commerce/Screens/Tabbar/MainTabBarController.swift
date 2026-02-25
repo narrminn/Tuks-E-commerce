@@ -15,18 +15,22 @@ final class MainTabBarController: UITabBarController {
         let networkService = DefaultNetworkService()
         let homeViewModel = HomeViewModel(networkService: networkService)
         let wishlistViewModel = WishListViewModel(networkService: networkService)
+        let storeViewModel = StoreViewModel(networkService: networkService)
         
         let homeVC = HomeViewController(viewModel: homeViewModel, wishlistViewModel: wishlistViewModel)
         homeVC.tabBarItem = UITabBarItem(title: "Home",
                                          image: UIImage(named: "home")?.withRenderingMode(.alwaysOriginal),
                                          selectedImage: UIImage(named: "selected_home")?.withRenderingMode(.alwaysOriginal))
 
-        let storeVC = StoreViewController()
+        let storeVC = StoreViewController(
+            viewModel: storeViewModel,
+            wishlistViewModel: wishlistViewModel
+        )
         storeVC.tabBarItem = UITabBarItem(title: "Store",
                                           image: UIImage(named: "store")?.withRenderingMode(.alwaysOriginal),
                                           selectedImage: UIImage(named: "selected_store")?.withRenderingMode(.alwaysOriginal))
 
-        let wishlistVC = WishListViewController()
+        let wishlistVC = WishListViewController(viewModel: wishlistViewModel)
         wishlistVC.tabBarItem = UITabBarItem(title: "Wishlist",
                                               image: UIImage(named: "wishlist")?.withRenderingMode(.alwaysOriginal),
                                               selectedImage: UIImage(named: "selected_wishlist")?.withRenderingMode(.alwaysOriginal))

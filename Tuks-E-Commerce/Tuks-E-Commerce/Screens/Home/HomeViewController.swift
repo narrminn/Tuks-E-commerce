@@ -98,9 +98,26 @@ final class HomeViewController: UIViewController {
         viewModel.getCompanyList()
         viewModel.getPopularProduct()
         
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reloadHome),
+            name: .wishlistUpdated,
+            object: nil
+        )
+        
         
     }
-    
+
+    @objc private func reloadHome(_ notification: Notification) {
+        guard let productId = notification.userInfo?["productId"] as? Int else { return }
+        
+        if let index = viewModel.productAll.firstIndex(where: { $0.id == productId }) {
+            viewModel.productAll[index].isWishlist.toggle()
+            let indexPath = IndexPath(item: index, section: HomeSection.products.rawValue)
+            collectionView.reloadItems(at: [indexPath])
+        }
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
@@ -296,6 +313,7 @@ extension HomeViewController: UICollectionViewDataSource {
                 guard let self else { return }
                 
                 wishlistViewModel.addWishlist(id: viewModel.productAll[indexPath.row].id)
+                
             }
             
             return cell
