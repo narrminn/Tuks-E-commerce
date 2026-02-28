@@ -1,7 +1,7 @@
 import UIKit
 import SnapKit
 
-final class ProfileUpdateViewController: UIViewController {
+final class ProfileUpdateViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate  {
     
     // MARK: - UI Elements
     
@@ -51,6 +51,19 @@ final class ProfileUpdateViewController: UIViewController {
         MainButton(text: "Save")
     }()
     
+    let viewModel: ProfileViewModel
+    let fileViewModel: FileUploadViewModel
+    
+    init(viewModel: ProfileViewModel, fileViewModel: FileUploadViewModel) {
+        self.viewModel = viewModel
+        self.fileViewModel = fileViewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -59,8 +72,15 @@ final class ProfileUpdateViewController: UIViewController {
         addSubviews()
         setupConstraints()
         bindActions()
+        bindViewModel()
         
-        // TODO: viewModel bağla, mövcud məlumatları textfield-lara doldur
+        fillUserData()
+        
+        if let profileImage = UserDefaults.standard.string(
+            forKey: UserDefaultsKeys.profilePhotoPath
+        ) {
+            profileImageView.loadImage(url: profileImage)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -73,6 +93,33 @@ final class ProfileUpdateViewController: UIViewController {
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
         showTabBar()
+    }
+    
+    @objc private func profileImageTapped() {
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.allowsEditing = true
+        picker.delegate = self
+        present(picker, animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        picker.dismiss(animated: true)
+        
+        guard let image = info[.editedImage] as? UIImage else { return }
+        profileImageView.image = image
+        
+        uploadProfilePhoto(image)
+    }
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
+    }
+
+    private func uploadProfilePhoto(_ image: UIImage) {
+        guard let imageData = image.jpegData(compressionQuality: 0.8) else { return }
+        
+        fileViewModel.photoUpload(data: imageData)
     }
     
     // MARK: - Setup
@@ -140,6 +187,17 @@ final class ProfileUpdateViewController: UIViewController {
     
     // MARK: - Actions
     
+    private func fillUserData() {
+        nameTextField.text = UserDefaults.standard.string(forKey: UserDefaultsKeys.name)
+        surnameTextField.text = UserDefaults.standard.string(forKey: UserDefaultsKeys.surname)
+        phoneTextField.text = UserDefaults.standard.string(forKey: UserDefaultsKeys.phone)
+        birthTextField.text = UserDefaults.standard.string(forKey: UserDefaultsKeys.birth)
+        
+        if let photoPath = UserDefaults.standard.string(forKey: UserDefaultsKeys.profilePhotoPath) {
+            profileImageView.loadImage(url: photoPath)
+        }
+    }
+    
     private func bindActions() {
         let tap = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
         profileImageView.addGestureRecognizer(tap)
@@ -147,11 +205,76 @@ final class ProfileUpdateViewController: UIViewController {
         saveButton.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
     }
     
-    @objc private func profileImageTapped() {
-        // TODO: Kitabxana əlavə edəndə buraya image picker kodunu yaz
+    @objc private func saveTapped() {
+        if let name = nameTextField.text, !name.isEmpty,
+           let surname = surnameTextField.text, !surname.isEmpty,
+           let phone = phoneTextField.text, !phone.isEmpty {
+            
+            viewModel
+                .updateProfile(
+                    name: name,
+                    surname: surname,
+                    phone: phone,
+                    birth: birthTextField.text
+                )
+        }
     }
     
-    @objc private func saveTapped() {
-        // TODO: viewModel.updateProfile(...) çağır
+    private func bindViewModel() {
+        fileViewModel.photoUploadSuccess = { [weak self] fileUploadResponse in
+            guard let self else { return }
+            
+            self.viewModel.fileUploadResponse = fileUploadResponse
+        }
+        
+        fileViewModel.errorHandling = { [weak self] errorText in
+            guard let self else { return }
+            
+            self.present(
+                AlertHelper.showAlert(
+                    title: "Warning!",
+                    message: errorText
+                ),
+                animated: true
+            )
+        }
+        
+        viewModel.photoUpdateSuccess = { [weak self] in
+            guard let self else { return }
+            
+            UserDefaults.standard
+                .set(nameTextField.text, forKey: UserDefaultsKeys.name)
+            UserDefaults.standard
+                .set(surnameTextField.text, forKey: UserDefaultsKeys.surname)
+            UserDefaults.standard
+                .set(phoneTextField.text, forKey: UserDefaultsKeys.phone)
+            UserDefaults.standard
+                .set(birthTextField.text, forKey: UserDefaultsKeys.birth)
+            
+            if let profilePhoto = self.viewModel.fileUploadResponse {
+                UserDefaults.standard
+                    .set(
+                        profilePhoto.data?.file?.path,
+                        forKey: UserDefaultsKeys.profilePhotoPath
+                    )
+                UserDefaults.standard
+                    .set(
+                        profilePhoto.data?.file?.id,
+                        forKey: UserDefaultsKeys.profilePhotoUuid
+                    )
+            }
+        }
+        
+        viewModel.errorHandling = { [weak self] errorText in
+            guard let self else { return }
+            
+            self.present(
+                AlertHelper.showAlert(
+                    title: "Warning!",
+                    message: errorText
+                ),
+                animated: true
+            )
+        }
     }
 }

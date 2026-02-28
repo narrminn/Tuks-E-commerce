@@ -92,6 +92,20 @@ final class ProfileViewController: UIViewController {
         addSubviews()
         setupConstraints()
         bindActions()
+        
+        nameLabel.text = (UserDefaults.standard.string(forKey: UserDefaultsKeys.name) ?? "") +
+        " " + (
+            UserDefaults.standard.string(forKey: UserDefaultsKeys.surname) ?? ""
+        )
+        
+        emailLabel.text = UserDefaults.standard
+            .string(forKey: UserDefaultsKeys.email) ?? ""
+        
+        if let profileImage = UserDefaults.standard.string(
+            forKey: UserDefaultsKeys.profilePhotoPath
+        ) {
+            profileImageView.loadImage(url: profileImage)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -164,12 +178,35 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc private func editTapped() {
-        let vc = ProfileUpdateViewController()
+        let networkService = DefaultNetworkService()
+        
+        let vc = ProfileUpdateViewController(
+            viewModel: ProfileViewModel(networkService: networkService),
+            fileViewModel: FileUploadViewModel(networkService: networkService)
+        )
         navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc private func logoutTapped() {
-        // TODO: Logout
+        _ = KeychainManager.shared.delete(key: "token")
+        
+        let keys = [
+                UserDefaultsKeys.name,
+                UserDefaultsKeys.surname,
+                UserDefaultsKeys.email,
+                UserDefaultsKeys.phone,
+                UserDefaultsKeys.birth,
+                UserDefaultsKeys.profilePhotoPath,
+                UserDefaultsKeys.profilePhotoUuid
+            ]
+            keys.forEach { UserDefaults.standard.removeObject(forKey: $0) }
+        
+        let loginVC = LoginBuilder.build()
+        let navController = UINavigationController(rootViewController: loginVC)
+        
+        guard let window = view.window else { return }
+        window.rootViewController = navController
+        UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil)
     }
     
     private func openBrowser(urlString: String) {

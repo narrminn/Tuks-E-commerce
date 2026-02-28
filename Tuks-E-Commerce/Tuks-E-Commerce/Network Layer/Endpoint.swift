@@ -7,6 +7,11 @@ protocol Endpoint {
     var headers: [String: String]? { get }
     var queryItems: [URLQueryItem]? { get }
     var httpBody: Encodable? { get }
+    var multipartData: MultipartData? { get }
+}
+
+extension Endpoint {
+    var multipartData: MultipartData? { nil }
 }
 
 extension Endpoint {
@@ -29,7 +34,11 @@ extension Endpoint {
             request.setValue(value, forHTTPHeaderField: key)
         }
         
-        if let httpBody {
+        if let multipart = multipartData {
+            let boundary = "Boundary-\(UUID().uuidString)"
+            request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+            request.httpBody = buildMultipartBody(multipart: multipart, boundary: boundary)
+        } else if let httpBody {
             do {
                 let encodedData = try JSONEncoder().encode(httpBody)
                 request.httpBody = encodedData
@@ -39,5 +48,26 @@ extension Endpoint {
         }
         
         return .success(request)
+    }
+}
+
+private func buildMultipartBody(multipart: MultipartData, boundary: String) -> Data {
+    var body = Data()
+    
+    body.append("--\(boundary)\r\n")
+    body.append("Content-Disposition: form-data; name=\"\(multipart.fieldName)\"; filename=\"\(multipart.fileName)\"\r\n")
+    body.append("Content-Type: \(multipart.mimeType)\r\n\r\n")
+    body.append(multipart.fileData)
+    body.append("\r\n--\(boundary)--\r\n")
+    
+    return body
+}
+
+// Data extension - string append üçün
+extension Data {
+    mutating func append(_ string: String) {
+        if let data = string.data(using: .utf8) {
+            append(data)
+        }
     }
 }
