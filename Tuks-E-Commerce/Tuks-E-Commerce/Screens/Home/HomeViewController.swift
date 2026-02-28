@@ -353,12 +353,14 @@ extension HomeViewController: UICollectionViewDelegate {
         guard let sectionType = HomeSection(rawValue: indexPath.section) else { return }
 
         switch sectionType {
-        case .brands:
-            print("Selected brand at index: \(indexPath.item)")
-
         case .products:
-            // TODO: - ProductDetailViewController-a push et
-            print("Selected product at index: \(indexPath.item)")
+            let product = viewModel.productAll[indexPath.item]
+            let detailVM = ProductDetailViewModel(
+                networkService: DefaultNetworkService(),
+                id: product.id
+            )
+            let detailVC = ProductDetailViewController(viewModel: detailVM)
+            navigationController?.pushViewController(detailVC, animated: true)
 
         default:
             break

@@ -5,6 +5,8 @@ enum ProductEndPoint {
     case addWishlist(id: Int)
     case getWishlist(page: Int)
     case search(page: Int, keyword: String)
+    
+    case detail(id: Int)
 }
 
 extension ProductEndPoint: Endpoint {
@@ -22,6 +24,8 @@ extension ProductEndPoint: Endpoint {
             return "/api/product/wishlist/index"
         case .search:
             return "/api/product/search"
+        case .detail(let id):
+            return "/api/product/detail/\(id)"
         }
     }
 
@@ -34,6 +38,8 @@ extension ProductEndPoint: Endpoint {
         case .getWishlist:
             return .get
         case .search:
+            return .get
+        case .detail:
             return .get
         }
     }

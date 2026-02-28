@@ -132,7 +132,13 @@ extension StoreViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView,
                         didSelectItemAt indexPath: IndexPath) {
-        // TODO: ProductDetailViewController-a push et
+        let product = viewModel.productAll[indexPath.item]
+            let detailVM = ProductDetailViewModel(
+                networkService: DefaultNetworkService(),
+                id: product.id
+            )
+            let detailVC = ProductDetailViewController(viewModel: detailVM)
+            navigationController?.pushViewController(detailVC, animated: true)
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
