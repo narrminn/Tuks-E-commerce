@@ -11,6 +11,8 @@ final class ProductDetailViewController: UIViewController {
     
     private var options: [Option] = []
     private var selectedValues: [Int: Int] = [:]
+    
+    private var isWishList = false
 
     // MARK: - UI
     private lazy var scrollView = UIScrollView()
@@ -28,9 +30,10 @@ final class ProductDetailViewController: UIViewController {
 
     private lazy var favoriteButton: UIButton = {
         let btn = UIButton(type: .system)
-        btn.setImage(UIImage(systemName: "heart.fill"), for: .normal)
-        btn.tintColor = .systemRed
+        btn.setImage(UIImage(systemName: Icon.heart.title), for: .normal)
+        btn.tintColor = .gray
         btn.backgroundColor = .white
+        btn.addTarget(self, action: #selector(favoriteTapped), for: .touchUpInside)
         btn.layer.cornerRadius = 20
         return btn
     }()
@@ -149,6 +152,8 @@ final class ProductDetailViewController: UIViewController {
     }()
     
     let viewModel: ProductDetailViewModel
+    let wishlistViewModel: WishListViewModel
+    let basketViewModel: BasketViewModel
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -171,8 +176,14 @@ final class ProductDetailViewController: UIViewController {
         showTabBar()
     }
     
-    init(viewModel: ProductDetailViewModel) {
+    init(
+        viewModel: ProductDetailViewModel,
+        wishlistViewModel: WishListViewModel,
+        basketViewModel: BasketViewModel
+    ) {
         self.viewModel = viewModel
+        self.wishlistViewModel = wishlistViewModel
+        self.basketViewModel = basketViewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -206,7 +217,8 @@ final class ProductDetailViewController: UIViewController {
         ratingLabel.text = "⭐️ \(product.rating ?? 0)"
         brandLabel.text = product.company?.name
         descriptionLabel.text = product.description
-        favoriteButton.tintColor = (product.isWishlist == true) ? .systemRed : .lightGray
+        isWishList = product.isWishlist ?? false
+        setWishListImage()
 
         if let logo = product.company?.logo {
             brandIcon.loadImage(fullURL: logo)
@@ -220,6 +232,14 @@ final class ProductDetailViewController: UIViewController {
 
         options = product.options ?? []
         buildOptionSections()
+    }
+    
+    // MARK: - Wishlist
+    private func setWishListImage() {
+        let heartName = isWishList ? Icon.heartFilled.title : Icon.heart.title
+        let heartColor: UIColor = isWishList ? .systemRed : .gray
+        favoriteButton.setImage(UIImage(systemName: heartName), for: .normal)
+        favoriteButton.tintColor = heartColor
     }
     
     // MARK: - Build Options
@@ -364,11 +384,30 @@ final class ProductDetailViewController: UIViewController {
     }
 
     @objc private func favoriteTapped() {
-        // TODO: Wishlist API
+        isWishList = !isWishList
+        setWishListImage()
+        wishlistViewModel.addWishlist(id: viewModel.id)
     }
 
     @objc private func addToBagTapped() {
-        // TODO: Seçilən variant ilə səbətə əlavə et
+        let selectedAttributeIds: [Int] = selectedValues.compactMap { (optionIndex, valueIndex) in
+            options[optionIndex].values?[valueIndex].id
+        }
+        
+        guard let variant = viewModel.productResponse?.data?.product?.variants?.first(where: { variant in
+            guard let attributes = variant.attributes else { return false }
+            return selectedAttributeIds.allSatisfy { attributes.contains($0) }
+        }) else {
+            present(
+                AlertHelper.showAlert(title: "Error", message: "Please select a valid variant"),
+                animated: true
+            )
+            return
+        }
+        
+        basketViewModel.addToBasket(
+            body: AddToBasketRequest(variantID: variant.id, quantity: 1)
+        )
     }
 }
 

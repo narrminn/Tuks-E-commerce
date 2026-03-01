@@ -7,6 +7,8 @@ enum ProductEndPoint {
     case search(page: Int, keyword: String)
     
     case detail(id: Int)
+    
+    case addToBasket(body: AddToBasketRequest)
 }
 
 extension ProductEndPoint: Endpoint {
@@ -26,6 +28,8 @@ extension ProductEndPoint: Endpoint {
             return "/api/product/search"
         case .detail(let id):
             return "/api/product/detail/\(id)"
+        case .addToBasket:
+            return "/api/basket/store"
         }
     }
 
@@ -41,6 +45,8 @@ extension ProductEndPoint: Endpoint {
             return .get
         case .detail:
             return .get
+        case .addToBasket:
+            return .post
         }
     }
 
@@ -69,6 +75,11 @@ extension ProductEndPoint: Endpoint {
     }
 
     var httpBody: (any Encodable)? {
-        return nil
+        switch self {
+        case .addToBasket(let body):
+            return body
+        default:
+            return nil
+        }
     }
 }

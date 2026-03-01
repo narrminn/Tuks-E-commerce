@@ -48,6 +48,23 @@ final class StoreViewController: UIViewController {
         bindViewModel()
         
         viewModel.search(keyword: searchView.textField.text ?? "")
+        
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reloadStore),
+            name: .wishlistUpdated,
+            object: nil
+        )
+    }
+    
+    @objc private func reloadStore(_ notification: Notification) {
+        guard let productId = notification.userInfo?["productId"] as? Int else { return }
+        
+        if let index = viewModel.productAll.firstIndex(where: { $0.id == productId }) {
+            viewModel.productAll[index].isWishlist.toggle()
+            collectionView.reloadData()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -137,7 +154,15 @@ extension StoreViewController: UICollectionViewDelegate {
                 networkService: DefaultNetworkService(),
                 id: product.id
             )
-            let detailVC = ProductDetailViewController(viewModel: detailVM)
+        let detailVC = ProductDetailViewController(
+            viewModel: detailVM,
+            wishlistViewModel: WishListViewModel(
+                networkService: DefaultNetworkService()
+            ),
+            basketViewModel: BasketViewModel(
+                networkService: DefaultNetworkService()
+            )
+        )
             navigationController?.pushViewController(detailVC, animated: true)
     }
     
