@@ -95,7 +95,7 @@ final class WishListViewController: UIViewController {
     }
     
     @objc private func cartTapped() {
-        let cartVC = CartViewController()
+        let cartVC = BasketViewController()
         navigationController?.pushViewController(cartVC, animated: true)
     }
     
@@ -154,7 +154,21 @@ extension WishListViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView,
                         didSelectItemAt indexPath: IndexPath) {
-        // TODO: ProductDetailViewController-a push et
+        let product = viewModel.productAll[indexPath.item]
+            let detailVM = ProductDetailViewModel(
+                networkService: DefaultNetworkService(),
+                id: product.id
+            )
+        let detailVC = ProductDetailViewController(
+            viewModel: detailVM,
+            wishlistViewModel: WishListViewModel(
+                networkService: DefaultNetworkService()
+            ),
+            basketViewModel: BasketViewModel(
+                networkService: DefaultNetworkService()
+            )
+        )
+            navigationController?.pushViewController(detailVC, animated: true)
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
