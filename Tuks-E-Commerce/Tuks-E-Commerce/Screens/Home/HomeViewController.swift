@@ -235,7 +235,9 @@ final class HomeViewController: UIViewController {
     // MARK: - Actions
 
     @objc private func cartTapped() {
-        let cartVC = BasketViewController()
+        let cartVC = BasketViewController(
+            viewModel: BasketViewModel(networkService: DefaultNetworkService())
+        )
         navigationController?.pushViewController(cartVC, animated: true)
     }
 

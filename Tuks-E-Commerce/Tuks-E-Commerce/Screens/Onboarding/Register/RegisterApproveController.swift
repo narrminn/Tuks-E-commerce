@@ -84,6 +84,11 @@ class RegisterApproveController: UIViewController {
         codeTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+    
     init(viewModel: RegisterApproveViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -95,7 +100,6 @@ class RegisterApproveController: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = .accent
-        navigationItem.hidesBackButton = true
         
         codeContainerView.addSubview(codeTextField)
             

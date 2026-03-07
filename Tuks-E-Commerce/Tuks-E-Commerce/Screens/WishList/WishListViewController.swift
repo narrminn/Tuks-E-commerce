@@ -95,7 +95,9 @@ final class WishListViewController: UIViewController {
     }
     
     @objc private func cartTapped() {
-        let cartVC = BasketViewController()
+        let cartVC = BasketViewController(
+            viewModel: BasketViewModel(networkService: DefaultNetworkService())
+        )
         navigationController?.pushViewController(cartVC, animated: true)
     }
     

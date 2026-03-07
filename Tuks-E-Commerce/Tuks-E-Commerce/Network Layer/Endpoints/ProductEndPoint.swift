@@ -9,6 +9,10 @@ enum ProductEndPoint {
     case detail(id: Int)
     
     case addToBasket(body: AddToBasketRequest)
+    
+    case getBasketItems
+    case deleteBasketItem(id: Int)
+    case checkout
 }
 
 extension ProductEndPoint: Endpoint {
@@ -30,6 +34,12 @@ extension ProductEndPoint: Endpoint {
             return "/api/product/detail/\(id)"
         case .addToBasket:
             return "/api/basket/store"
+        case .getBasketItems:
+            return "/api/basket/index"
+        case .deleteBasketItem(let id):
+            return "/api/basket/delete/\(id)"
+        case .checkout:
+            return "/api/checkout"
         }
     }
 
@@ -46,6 +56,12 @@ extension ProductEndPoint: Endpoint {
         case .detail:
             return .get
         case .addToBasket:
+            return .post
+        case .getBasketItems:
+            return .get
+        case .deleteBasketItem:
+            return .delete
+        case .checkout:
             return .post
         }
     }

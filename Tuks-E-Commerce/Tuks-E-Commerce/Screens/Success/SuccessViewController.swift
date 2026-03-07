@@ -72,6 +72,18 @@ class SuccessViewController: UIViewController {
         configure()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+        hideTabBar()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        showTabBar()
+    }
+    
+    
     private func setupUI() {
         view.backgroundColor = .accent
         navigationItem.hidesBackButton = true
@@ -148,6 +160,15 @@ extension SuccessViewController {
             title: "Your account successfully\ncreated!",
             description: "Enjoy your time shopping on the internet! Let's start!",
             buttonText: "Continue",
+            onContinue: onContinue
+        )
+    }
+    
+    static func orderPlaced(onContinue: (() -> Void)? = nil) -> SuccessViewController {
+        return SuccessViewController(
+            title: "Order placed\nsuccessfully!",
+            description: "Your order is on its way. Thank you for shopping with us!",
+            buttonText: "Continue Shopping",
             onContinue: onContinue
         )
     }
