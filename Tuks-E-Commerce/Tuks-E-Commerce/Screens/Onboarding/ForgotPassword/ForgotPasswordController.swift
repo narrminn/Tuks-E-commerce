@@ -61,6 +61,11 @@ class ForgotPasswordController: UIViewController {
         emailTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+    
     init(viewModel: ForgotPasswordViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -72,7 +77,6 @@ class ForgotPasswordController: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = .accent
-        navigationItem.hidesBackButton = true
     
         [
             closeButton,
