@@ -159,7 +159,6 @@ final class ProductDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        navigationController?.navigationBar.isHidden = true
         setupUI()
         bindViewModel()
         viewModel.getProductDetail()
@@ -279,6 +278,54 @@ final class ProductDetailViewController: UIViewController {
         cv.delegate = self
         return cv
     }
+    
+    // MARK: - Variant Filtering
+    private func availableValueIds(forOptionAt targetIndex: Int) -> Set<Int> {
+        let variants = viewModel.productResponse?.data?.product?.variants ?? []
+        
+        var otherSelectedIds: [Int] = []
+        for (optionIndex, valueIndex) in selectedValues {
+            guard optionIndex != targetIndex else { continue }
+            if let id = options[optionIndex].values?[valueIndex].id {
+                otherSelectedIds.append(id)
+            }
+        }
+        
+        var available = Set<Int>()
+        for value in options[targetIndex].values ?? [] {
+            guard let valueId = value.id else { continue }
+            let needed = otherSelectedIds + [valueId]
+            let hasVariant = variants.contains { variant in
+                guard let attrs = variant.attributes else { return false }
+                return needed.allSatisfy { attrs.contains($0) }
+            }
+            if hasVariant { available.insert(valueId) }
+        }
+        return available
+    }
+    
+    private func reloadAllOptionCollections() {
+        for case let section as UIStackView in optionsStackView.arrangedSubviews {
+            for subview in section.arrangedSubviews {
+                if let cv = subview as? UICollectionView {
+                    cv.reloadData()
+                }
+            }
+        }
+    }
+
+    private func updatePriceForSelectedVariant() {
+        let selectedAttributeIds: [Int] = selectedValues.compactMap { (optionIndex, valueIndex) in
+            options[optionIndex].values?[valueIndex].id
+        }
+        
+        if let variant = viewModel.productResponse?.data?.product?.variants?.first(where: { variant in
+            guard let attrs = variant.attributes else { return false }
+            return selectedAttributeIds.allSatisfy { attrs.contains($0) }
+        }) {
+            priceLabel.text = "$\(variant.price ?? 0)"
+        }
+    }
 
     // MARK: - Setup
     private func setupUI() {
@@ -288,6 +335,7 @@ final class ProductDetailViewController: UIViewController {
         view.addSubview(favoriteButton)
         view.addSubview(scrollView)
         view.addSubview(addToBagButton)
+        
         scrollView.addSubview(contentView)
 
         mainImageView.snp.makeConstraints {
@@ -437,9 +485,9 @@ extension ProductDetailViewController: UICollectionViewDataSource, UICollectionV
         let optionIndex = collectionView.tag
         let value = options[optionIndex].values![indexPath.item]
         let isSelected = selectedValues[optionIndex] == indexPath.item
-        let isAvailable = viewModel.productResponse?.data?.product?.variants?
-            .first { $0.attributes?.contains(value.id ?? -1) == true }?
-            .inStock ?? true
+        
+        let availableIds = availableValueIds(forOptionAt: optionIndex)
+        let isAvailable = availableIds.contains(value.id ?? -1)
 
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: VariantCell.reuseID, for: indexPath) as! VariantCell
         cell.configure(value: value, isSelected: isSelected, isAvailable: isAvailable)
@@ -461,8 +509,42 @@ extension ProductDetailViewController: UICollectionViewDataSource, UICollectionV
             thumbnailCollectionView.reloadData()
             mainImageView.loadImage(fullURL: thumbnailUrls[indexPath.item])
         } else {
-            selectedValues[collectionView.tag] = indexPath.item
-            collectionView.reloadData()
+            let optionIndex = collectionView.tag
+            selectedValues[optionIndex] = indexPath.item
+            
+            guard let selectedValueId = options[optionIndex].values?[indexPath.item].id else { return }
+            
+            let variants = viewModel.productResponse?.data?.product?.variants ?? []
+            
+            let allSelectedIds: [Int] = selectedValues.compactMap { (optIdx, valIdx) in
+                options[optIdx].values?[valIdx].id
+            }
+            
+            let currentMatch = variants.first { variant in
+                guard let attrs = variant.attributes else { return false }
+                return allSelectedIds.allSatisfy { attrs.contains($0) }
+            }
+            
+            if currentMatch == nil {
+                if let bestVariant = variants.first(where: { variant in
+                    guard let attrs = variant.attributes else { return false }
+                    return attrs.contains(selectedValueId)
+                }) {
+                    for (otherIndex, option) in options.enumerated() {
+                        guard otherIndex != optionIndex else { continue }
+                        for (valueIdx, value) in (option.values ?? []).enumerated() {
+                            if let valueId = value.id,
+                               bestVariant.attributes?.contains(valueId) == true {
+                                selectedValues[otherIndex] = valueIdx
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+            
+            reloadAllOptionCollections()
+            updatePriceForSelectedVariant()
         }
     }
 }
