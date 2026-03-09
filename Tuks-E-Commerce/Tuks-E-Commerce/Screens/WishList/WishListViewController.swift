@@ -2,6 +2,10 @@ import UIKit
 import SnapKit
 
 final class WishListViewController: UIViewController {
+    
+    //MARK: - Property
+    
+    private let emptyStateView = EmptyStateView.wishlist()
 
     // MARK: - UI Elements
         
@@ -72,7 +76,8 @@ final class WishListViewController: UIViewController {
         [
             titleLabel,
             cartButton,
-            collectionView
+            collectionView,
+            emptyStateView
         ].forEach { view.addSubview($0) }
     }
     
@@ -92,6 +97,12 @@ final class WishListViewController: UIViewController {
             make.top.equalTo(titleLabel.snp.bottom).offset(12)
             make.leading.trailing.bottom.equalToSuperview()
         }
+        
+        emptyStateView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(-40)
+            make.leading.trailing.equalToSuperview()
+        }
     }
     
     @objc private func cartTapped() {
@@ -101,7 +112,11 @@ final class WishListViewController: UIViewController {
     
     private func bindViewModel() {
         viewModel.fetchProductSuccess = { [weak self] in
-            self?.collectionView.reloadData()
+            guard let self else { return }
+
+            self.collectionView.reloadData()
+            emptyStateView.isHidden = !viewModel.productAll.isEmpty
+            collectionView.isHidden = viewModel.productAll.isEmpty
         }
         
         viewModel.errorHandling = { [weak self] errorText in

@@ -6,6 +6,13 @@ final class ProductDetailViewModel {
     var productResponse: ProductDetailResponse?
     var id: Int
     
+    var thumbnailUrls: [String] = []
+        
+    var options: [Option] = []
+    var selectedValues: [Int: Int] = [:]
+    
+    var isWishList = false
+    
     var productDetailSuccess: (() -> Void)?
     var errorHandling: ((String) -> Void)?
     

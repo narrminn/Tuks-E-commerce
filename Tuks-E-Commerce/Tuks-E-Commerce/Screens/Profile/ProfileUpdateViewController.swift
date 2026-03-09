@@ -31,6 +31,20 @@ final class ProfileUpdateViewController: UIViewController, UIImagePickerControll
         return view
     }()
     
+    private let datePicker = UIDatePicker()
+    
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
+
+    private let displayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd MMM yyyy"
+        return formatter
+    }()
+    
     private let nameTextField = CustomTextField(placeholder: "Name", keyboardType: .default)
     private let surnameTextField = CustomTextField(placeholder: "Surname", keyboardType: .default)
     private let phoneTextField = CustomTextField(placeholder: "Phone", keyboardType: .phonePad)
@@ -117,6 +131,8 @@ final class ProfileUpdateViewController: UIViewController, UIImagePickerControll
         view.backgroundColor = .systemGray6
         title = "Edit Profile"
         
+        configureDatePicker()
+        
         cameraOverlay.addSubview(cameraIconView)
         profileImageView.addSubview(cameraOverlay)
         
@@ -183,7 +199,12 @@ final class ProfileUpdateViewController: UIViewController, UIImagePickerControll
         nameTextField.text = UserDefaults.standard.string(forKey: UserDefaultsKeys.name)
         surnameTextField.text = UserDefaults.standard.string(forKey: UserDefaultsKeys.surname)
         phoneTextField.text = UserDefaults.standard.string(forKey: UserDefaultsKeys.phone)
-        birthTextField.text = UserDefaults.standard.string(forKey: UserDefaultsKeys.birth)
+        
+        if let birthString = UserDefaults.standard.string(forKey: UserDefaultsKeys.birth),
+           let date = dateFormatter.date(from: birthString) {
+            datePicker.date = date
+            birthTextField.text = displayFormatter.string(from: date)
+        }
         
         if let photoPath = UserDefaults.standard.string(forKey: UserDefaultsKeys.profilePhotoPath) {
             profileImageView.loadImage(url: photoPath)
@@ -197,19 +218,38 @@ final class ProfileUpdateViewController: UIViewController, UIImagePickerControll
         saveButton.addTarget(self, action: #selector(saveTapped), for: .touchUpInside)
     }
     
+    private func configureDatePicker() {
+        datePicker.datePickerMode = .date
+        datePicker.preferredDatePickerStyle = .wheels
+        datePicker.maximumDate = Date()
+        datePicker.addTarget(self, action: #selector(dateChanged), for: .valueChanged)
+        
+        let toolbar = UIToolbar()
+        toolbar.sizeToFit()
+        let doneButton = UIBarButtonItem(title: "Done", style: .prominent, target: self, action: #selector(dateDoneTapped))
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        toolbar.setItems([flexSpace, doneButton], animated: false)
+        
+        birthTextField.inputView = datePicker
+        birthTextField.inputAccessoryView = toolbar
+    }
+    
+    @objc private func dateChanged() {
+        birthTextField.text = displayFormatter.string(from: datePicker.date)
+    }
+
+    @objc private func dateDoneTapped() {
+        birthTextField.text = displayFormatter.string(from: datePicker.date)
+        birthTextField.resignFirstResponder()
+    }
+    
     @objc private func saveTapped() {
-        if let name = nameTextField.text, !name.isEmpty,
-           let surname = surnameTextField.text, !surname.isEmpty,
-           let phone = phoneTextField.text, !phone.isEmpty {
-            
-            viewModel
-                .updateProfile(
-                    name: name,
-                    surname: surname,
-                    phone: phone,
-                    birth: birthTextField.text
-                )
-        }
+        guard let name = nameTextField.text, !name.isEmpty,
+              let surname = surnameTextField.text, !surname.isEmpty,
+              let phone = phoneTextField.text, !phone.isEmpty else { return }
+        
+        let birthString = dateFormatter.string(from: datePicker.date)
+        viewModel.updateProfile(name: name, surname: surname, phone: phone, birth: birthString)
     }
     
     private func bindViewModel() {
@@ -224,32 +264,44 @@ final class ProfileUpdateViewController: UIViewController, UIImagePickerControll
         viewModel.photoUpdateSuccess = { [weak self] in
             guard let self else { return }
             
-            UserDefaults.standard
-                .set(nameTextField.text, forKey: UserDefaultsKeys.name)
-            UserDefaults.standard
-                .set(surnameTextField.text, forKey: UserDefaultsKeys.surname)
-            UserDefaults.standard
-                .set(phoneTextField.text, forKey: UserDefaultsKeys.phone)
-            UserDefaults.standard
-                .set(birthTextField.text, forKey: UserDefaultsKeys.birth)
+            saveUserDataLocally()
+            showSuccess(message: "Profile updated successfully!")
             
-            if let profilePhoto = self.viewModel.fileUploadResponse {
-                UserDefaults.standard
-                    .set(
-                        profilePhoto.data?.file?.path,
-                        forKey: UserDefaultsKeys.profilePhotoPath
-                    )
-                UserDefaults.standard
-                    .set(
-                        profilePhoto.data?.file?.id,
-                        forKey: UserDefaultsKeys.profilePhotoUuid
-                    )
-            }
         }
         
         viewModel.errorHandling = { [weak self] errorText in
             self?.showError(message: errorText)
         }
+    }
+    
+    private func saveUserDataLocally() {
+        UserDefaults.standard
+            .set(nameTextField.text, forKey: UserDefaultsKeys.name)
+        UserDefaults.standard
+            .set(surnameTextField.text, forKey: UserDefaultsKeys.surname)
+        UserDefaults.standard
+            .set(phoneTextField.text, forKey: UserDefaultsKeys.phone)
+        UserDefaults.standard
+            .set(dateFormatter.string(from: datePicker.date), forKey: UserDefaultsKeys.birth)
+        
+        if let profilePhoto = self.viewModel.fileUploadResponse {
+            UserDefaults.standard
+                .set(
+                    profilePhoto.data?.file?.path,
+                    forKey: UserDefaultsKeys.profilePhotoPath
+                )
+            UserDefaults.standard
+                .set(
+                    profilePhoto.data?.file?.id,
+                    forKey: UserDefaultsKeys.profilePhotoUuid
+                )
+        }
+
+    }
+    
+    private func showSuccess(message: String) {
+        let alert = AlertHelper.showAlert(title: "Success", message: message)
+        present(alert, animated: true)
     }
     
     private func showError(message: String) {

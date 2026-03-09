@@ -3,6 +3,10 @@ import SnapKit
 
 final class BasketViewController: UIViewController {
     
+    //MARK: - Properties
+    
+    private let emptyStateView = EmptyStateView.cart()
+    
     // MARK: - UI Elements
         
     private lazy var backButton: UIButton = {
@@ -85,6 +89,11 @@ final class BasketViewController: UIViewController {
             guard let self else { return }
             tableView.reloadData()
             updateSummary(subtotal: Double(viewModel.totalPrice))
+            let isEmpty = viewModel.basketItems.isEmpty
+            
+            emptyStateView.isHidden = !isEmpty
+            tableView.isHidden = isEmpty
+            bottomView.isHidden = isEmpty
         }
         
         viewModel.errorHandling = { message in
@@ -107,7 +116,13 @@ final class BasketViewController: UIViewController {
     // MARK: - Setup UI
         
     private func setupUI() {
-        [backButton, titleLabel, tableView, bottomView].forEach { view.addSubview($0) }
+        [
+            backButton,
+            titleLabel,
+            tableView,
+            bottomView,
+            emptyStateView
+        ].forEach { view.addSubview($0) }
 
         
         let divider = makeDivider()
@@ -140,6 +155,13 @@ final class BasketViewController: UIViewController {
     // MARK: - Constraints
     
     private func setupConstraints() {
+        
+        emptyStateView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(-40)
+            make.leading.trailing.equalToSuperview()
+        }
+        
         backButton.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(8)
             make.leading.equalToSuperview().offset(16)

@@ -3,6 +3,10 @@ import SnapKit
 
 final class StoreViewController: UIViewController {
     
+    //MARK: - Properties
+    
+    private let emptyStateView = EmptyStateView.searchNotFound()
+    
     // MARK: - UI Elements
 
     private let searchView = CustomSearchView()
@@ -64,7 +68,11 @@ final class StoreViewController: UIViewController {
     // MARK: - Setup
         
     private func setupUI() {
-        [searchView, collectionView].forEach { view.addSubview($0) }
+        [
+            searchView,
+            collectionView,
+            emptyStateView
+        ].forEach { view.addSubview($0) }
     }
 
     private func setupConstraints() {
@@ -77,6 +85,12 @@ final class StoreViewController: UIViewController {
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(searchView.snp.bottom).offset(12)
             make.leading.trailing.bottom.equalToSuperview()
+        }
+        
+        emptyStateView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(-40)
+            make.leading.trailing.equalToSuperview()
         }
     }
     
@@ -99,7 +113,10 @@ final class StoreViewController: UIViewController {
     
     private func bindViewModel() {
         viewModel.fetchProductSuccess = { [weak self] in
-            self?.collectionView.reloadData()
+            guard let self else { return }
+            collectionView.reloadData()
+            emptyStateView.isHidden = !viewModel.productAll.isEmpty
+            collectionView.isHidden = viewModel.productAll.isEmpty
         }
         
         viewModel.errorHandling = { [weak self] errorText in
