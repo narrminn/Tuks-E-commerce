@@ -102,17 +102,3 @@ Narmin Alasova — iOS Developer
 
 GitHub: @narrminn
 
-
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-03-09 at 12 56 25" src="https://github.com/user-attachments/assets/497843dd-77e5-4255-846a-5d1c09f8e8e5" />
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-03-09 at 12 56 31" src="https://github.com/user-attachments/assets/86262db3-9155-47bd-978a-dc56e9090e5d" />
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-03-09 at 12 56 57" src="https://github.com/user-attachments/assets/2bed0cb7-2dde-46cb-93c1-d5f1acaff211" />
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-03-09 at 12 57 34" src="https://github.com/user-attachments/assets/e13fa018-fd92-4c67-b2b1-07c6cc06532d" />
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-03-09 at 12 54 41" src="https://github.com/user-attachments/assets/5b931b13-e5f4-4fe4-9631-f586cd343d0b" />
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-03-09 at 12 56 07" src="https://github.com/user-attachments/assets/8ec6f9c9-6043-4d5a-94fe-9734392b0305" />
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-03-09 at 12 54 48" src="https://github.com/user-attachments/assets/c2b875c7-779d-41a2-9cf8-189e1716289a" />
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-03-09 at 12 55 04" src="https://github.com/user-attachments/assets/c1130948-329e-4c03-926f-3d1fac645fa4" />
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-03-09 at 12 55 32" src="https://github.com/user-attachments/assets/d823a41c-636d-4877-9b25-123897034c5b" />
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-03-09 at 12 55 35" src="https://github.com/user-attachments/assets/929d84e4-6f73-4c99-b074-f32709b81474" />
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-03-09 at 12 55 40" src="https://github.com/user-attachments/assets/655ec9ec-8b7d-488a-8c78-8e913a06fe1a" />
-<img width="1206" height="2622" alt="Simulator Screenshot - iPhone 17 Pro - 2026-03-09 at 12 56 18" src="https://github.com/user-attachments/assets/fd65f1c5-be1e-4227-939e-c73c446fd495" />
-
