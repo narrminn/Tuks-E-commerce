@@ -4,15 +4,7 @@ import SnapKit
 final class ProductDetailViewController: UIViewController {
 
     // MARK: - Properties
-    private var selectedVariantIndex: Int = 0
     private var selectedImageIndex: Int = 0
-    
-    private var thumbnailUrls: [String] = []
-    
-    private var options: [Option] = []
-    private var selectedValues: [Int: Int] = [:]
-    
-    private var isWishList = false
 
     // MARK: - UI
     private lazy var scrollView = UIScrollView()
@@ -329,27 +321,27 @@ final class ProductDetailViewController: UIViewController {
         ratingLabel.text = "⭐️ \(product.rating ?? 0)"
         brandLabel.text = product.company?.name
         descriptionLabel.text = product.description
-        isWishList = product.isWishlist ?? false
+        viewModel.isWishList = product.isWishlist ?? false
         setWishListImage()
 
         if let logo = product.company?.logo {
             brandIcon.loadImage(fullURL: logo)
         }
 
-        thumbnailUrls = product.images?.compactMap { $0.url } ?? []
+        viewModel.thumbnailUrls = product.images?.compactMap { $0.url } ?? []
         if let mainUrl = product.images?.first(where: { $0.isMain == true })?.url {
             mainImageView.loadImage(fullURL: mainUrl)
         }
         thumbnailCollectionView.reloadData()
 
-        options = product.options ?? []
+        viewModel.options = product.options ?? []
         buildOptionSections()
     }
     
     // MARK: - Wishlist
     private func setWishListImage() {
-        let heartName = isWishList ? Icon.heartFilled.title : Icon.heart.title
-        let heartColor: UIColor = isWishList ? .systemRed : .gray
+        let heartName = viewModel.isWishList ? Icon.heartFilled.title : Icon.heart.title
+        let heartColor: UIColor = viewModel.isWishList ? .systemRed : .gray
         favoriteButton.setImage(UIImage(systemName: heartName), for: .normal)
         favoriteButton.tintColor = heartColor
     }
@@ -357,10 +349,10 @@ final class ProductDetailViewController: UIViewController {
     // MARK: - Build Options
     private func buildOptionSections() {
         optionsStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        selectedValues = [:]
+        viewModel.selectedValues = [:]
 
-        for (index, option) in options.enumerated() {
-            selectedValues[index] = 0
+        for (index, option) in viewModel.options.enumerated() {
+            viewModel.selectedValues[index] = 0
 
             let titleLabel = UILabel()
             titleLabel.text = option.name
@@ -397,15 +389,15 @@ final class ProductDetailViewController: UIViewController {
         let variants = viewModel.productResponse?.data?.product?.variants ?? []
         
         var otherSelectedIds: [Int] = []
-        for (optionIndex, valueIndex) in selectedValues {
+        for (optionIndex, valueIndex) in viewModel.selectedValues {
             guard optionIndex != targetIndex else { continue }
-            if let id = options[optionIndex].values?[valueIndex].id {
+            if let id = viewModel.options[optionIndex].values?[valueIndex].id {
                 otherSelectedIds.append(id)
             }
         }
         
         var available = Set<Int>()
-        for value in options[targetIndex].values ?? [] {
+        for value in viewModel.options[targetIndex].values ?? [] {
             guard let valueId = value.id else { continue }
             let needed = otherSelectedIds + [valueId]
             let hasVariant = variants.contains { variant in
@@ -428,8 +420,8 @@ final class ProductDetailViewController: UIViewController {
     }
 
     private func updatePriceForSelectedVariant() {
-        let selectedAttributeIds: [Int] = selectedValues.compactMap { (optionIndex, valueIndex) in
-            options[optionIndex].values?[valueIndex].id
+        let selectedAttributeIds: [Int] = viewModel.selectedValues.compactMap { (optionIndex, valueIndex) in
+            viewModel.options[optionIndex].values?[valueIndex].id
         }
         
         if let variant = viewModel.productResponse?.data?.product?.variants?.first(where: { variant in
@@ -446,14 +438,14 @@ final class ProductDetailViewController: UIViewController {
     }
 
     @objc private func favoriteTapped() {
-        isWishList = !isWishList
+        viewModel.isWishList = !viewModel.isWishList
         setWishListImage()
         wishlistViewModel.addWishlist(id: viewModel.id)
     }
 
     @objc private func addToBagTapped() {
-        let selectedAttributeIds: [Int] = selectedValues.compactMap { (optionIndex, valueIndex) in
-            options[optionIndex].values?[valueIndex].id
+        let selectedAttributeIds: [Int] = viewModel.selectedValues.compactMap { (optionIndex, valueIndex) in
+            viewModel.options[optionIndex].values?[valueIndex].id
         }
         
         guard let variant = viewModel.productResponse?.data?.product?.variants?.first(where: { variant in
@@ -482,9 +474,9 @@ extension ProductDetailViewController: UICollectionViewDataSource, UICollectionV
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == thumbnailCollectionView {
-            return thumbnailUrls.count
+            return viewModel.thumbnailUrls.count
         }
-        return options[collectionView.tag].values?.count ?? 0
+        return viewModel.options[collectionView.tag].values?.count ?? 0
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -492,17 +484,17 @@ extension ProductDetailViewController: UICollectionViewDataSource, UICollectionV
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ThumbnailCell.reuseID, for: indexPath) as! ThumbnailCell
             
             cell.configure(
-                imageUrl: thumbnailUrls[indexPath.item],
+                imageUrl: viewModel.thumbnailUrls[indexPath.item],
                 isSelected: indexPath.item == selectedImageIndex,
-                isLast: indexPath.item == thumbnailUrls.count - 1,
-                remaining: thumbnailUrls.count - 3
+                isLast: indexPath.item == viewModel.thumbnailUrls.count - 1,
+                remaining: viewModel.thumbnailUrls.count - 3
             )
             return cell
         }
         
         let optionIndex = collectionView.tag
-        let value = options[optionIndex].values![indexPath.item]
-        let isSelected = selectedValues[optionIndex] == indexPath.item
+        let value = viewModel.options[optionIndex].values![indexPath.item]
+        let isSelected = viewModel.selectedValues[optionIndex] == indexPath.item
         
         let availableIds = availableValueIds(forOptionAt: optionIndex)
         let isAvailable = availableIds.contains(value.id ?? -1)
@@ -516,7 +508,7 @@ extension ProductDetailViewController: UICollectionViewDataSource, UICollectionV
         if collectionView == thumbnailCollectionView {
             return CGSize(width: 72, height: 72)
         }
-        let text = options[collectionView.tag].values?[indexPath.item].value ?? ""
+        let text = viewModel.options[collectionView.tag].values?[indexPath.item].value ?? ""
         let width = text.size(withAttributes: [.font: UIFont.systemFont(ofSize: 14)]).width + 40
         return CGSize(width: max(width, 56), height: 36)
     }
@@ -525,17 +517,17 @@ extension ProductDetailViewController: UICollectionViewDataSource, UICollectionV
         if collectionView == thumbnailCollectionView {
             selectedImageIndex = indexPath.item
             thumbnailCollectionView.reloadData()
-            mainImageView.loadImage(fullURL: thumbnailUrls[indexPath.item])
+            mainImageView.loadImage(fullURL: viewModel.thumbnailUrls[indexPath.item])
         } else {
             let optionIndex = collectionView.tag
-            selectedValues[optionIndex] = indexPath.item
+            viewModel.selectedValues[optionIndex] = indexPath.item
             
-            guard let selectedValueId = options[optionIndex].values?[indexPath.item].id else { return }
+            guard let selectedValueId = viewModel.options[optionIndex].values?[indexPath.item].id else { return }
             
             let variants = viewModel.productResponse?.data?.product?.variants ?? []
             
-            let allSelectedIds: [Int] = selectedValues.compactMap { (optIdx, valIdx) in
-                options[optIdx].values?[valIdx].id
+            let allSelectedIds: [Int] = viewModel.selectedValues.compactMap { (optIdx, valIdx) in
+                viewModel.options[optIdx].values?[valIdx].id
             }
             
             let currentMatch = variants.first { variant in
@@ -548,12 +540,12 @@ extension ProductDetailViewController: UICollectionViewDataSource, UICollectionV
                     guard let attrs = variant.attributes else { return false }
                     return attrs.contains(selectedValueId)
                 }) {
-                    for (otherIndex, option) in options.enumerated() {
+                    for (otherIndex, option) in viewModel.options.enumerated() {
                         guard otherIndex != optionIndex else { continue }
                         for (valueIdx, value) in (option.values ?? []).enumerated() {
                             if let valueId = value.id,
                                bestVariant.attributes?.contains(valueId) == true {
-                                selectedValues[otherIndex] = valueIdx
+                                viewModel.selectedValues[otherIndex] = valueIdx
                                 break
                             }
                         }
