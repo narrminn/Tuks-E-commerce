@@ -1,7 +1,9 @@
 import UIKit
 import SnapKit
 
-class SuccessViewController: UIViewController {
+final class SuccessViewController: UIViewController {
+    
+    // MARK: - UI Elements
     
     private let checkmarkView: UIView = {
         let view = UIView()
@@ -43,33 +45,31 @@ class SuccessViewController: UIViewController {
         return label
     }()
     
-    private let continueButton: UIButton = {
-        return MainButton(text: "Continue")
-    }()
+    private let continueButton: MainButton
     
-    private let titleText: String
-    private let descriptionText: String
-    private let buttonText: String
+    // MARK: - Properties
+    
     private let onContinue: (() -> Void)?
     
+    // MARK: - Init
+    
     init(title: String, description: String, buttonText: String = "Continue", onContinue: (() -> Void)? = nil) {
-        self.titleText = title
-        self.descriptionText = description
-        self.buttonText = buttonText
+        self.continueButton = MainButton(text: buttonText)
         self.onContinue = onContinue
         super.init(nibName: nil, bundle: nil)
+        titleLabel.text = title
+        descriptionLabel.text = description
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError() }
+    
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
-        setupActions()
-        configure()
+        continueButton.addTarget(self, action: #selector(continueTapped), for: .touchUpInside)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -83,89 +83,77 @@ class SuccessViewController: UIViewController {
         showTabBar()
     }
     
+    // MARK: - Setup
     
     private func setupUI() {
         view.backgroundColor = .accent
         navigationItem.hidesBackButton = true
         
-        checkmarkView.addSubview(innerCheckmarkView)
         innerCheckmarkView.addSubview(checkmarkImageView)
-            
+        checkmarkView.addSubview(innerCheckmarkView)
+        
         [
             checkmarkView,
             titleLabel,
             descriptionLabel,
             continueButton
-        ].forEach(view.addSubview)
+        ].forEach { view.addSubview($0) }
     }
     
     private func setupConstraints() {
         checkmarkView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview().offset(-80)
-            make.width.height.equalTo(160)
+            make.size.equalTo(160)
         }
         
         innerCheckmarkView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(120)
+            make.size.equalTo(120)
         }
         
         checkmarkImageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.width.height.equalTo(60)
+            make.size.equalTo(60)
         }
         
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(checkmarkView.snp.bottom).offset(40)
-            make.leading.equalToSuperview().offset(40)
-            make.trailing.equalToSuperview().offset(-40)
+            make.leading.trailing.equalToSuperview().inset(40)
         }
         
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(16)
-            make.leading.equalToSuperview().offset(40)
-            make.trailing.equalToSuperview().offset(-40)
+            make.leading.trailing.equalToSuperview().inset(40)
         }
         
         continueButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
             make.bottom.equalTo(view.safeAreaLayoutGuide).offset(-20)
             make.height.equalTo(56)
         }
     }
     
-    private func setupActions() {
-        continueButton.addTarget(self, action: #selector(continueTapped), for: .touchUpInside)
-    }
-    
-    private func configure() {
-        titleLabel.text = titleText
-        descriptionLabel.text = descriptionText
-        
-        if continueButton is MainButton {
-            continueButton.setTitle(buttonText, for: .normal)
-        }
-    }
+    // MARK: - Actions
     
     @objc private func continueTapped() {
         onContinue?()
     }
 }
 
+// MARK: - Factory Methods
+
 extension SuccessViewController {
     static func accountCreated(onContinue: (() -> Void)? = nil) -> SuccessViewController {
-        return SuccessViewController(
+        SuccessViewController(
             title: "Your account successfully\ncreated!",
             description: "Enjoy your time shopping on the internet! Let's start!",
-            buttonText: "Continue",
             onContinue: onContinue
         )
     }
     
     static func orderPlaced(onContinue: (() -> Void)? = nil) -> SuccessViewController {
-        return SuccessViewController(
+        SuccessViewController(
             title: "Order placed\nsuccessfully!",
             description: "Your order is on its way. Thank you for shopping with us!",
             buttonText: "Continue Shopping",

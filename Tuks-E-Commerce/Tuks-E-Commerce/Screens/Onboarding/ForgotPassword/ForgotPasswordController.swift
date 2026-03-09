@@ -1,8 +1,10 @@
 import UIKit
 import SnapKit
 
-class ForgotPasswordController: UIViewController {
+final class ForgotPasswordController: UIViewController {
     
+    // MARK: - UI Elements
+
     private let closeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "xmark"), for: .normal)
@@ -35,30 +37,36 @@ class ForgotPasswordController: UIViewController {
         return label
     }()
     
-    private let emailTextField: UITextField = {
-        CustomTextField(
-            placeholder: "Enter your email",
-            keyboardType: .emailAddress
-        )
-    }()
+    private let emailTextField = CustomTextField(placeholder: "Enter your email", keyboardType: .emailAddress)
     
-    private let submitButton: UIButton = {
+    private let submitButton: MainButton = {
         let button = MainButton(text: "Submit")
         button.isEnabled = false
         button.alpha = 0.5
         return button
     }()
     
-    let viewModel: ForgotPasswordViewModel
+    // MARK: - Properties
     
+    private let viewModel: ForgotPasswordViewModel
+    
+    // MARK: - Init
+
+    init(viewModel: ForgotPasswordViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+    
+    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
         setupActions()
         bindViewModel()
-        
-        emailTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -66,66 +74,79 @@ class ForgotPasswordController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
-    init(viewModel: ForgotPasswordViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
+    // MARK: - Setup
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     private func setupUI() {
         view.backgroundColor = .accent
-    
-        [
-            closeButton,
-            titleLabel,
-            descriptionLabel,
-            emailLabel,
-            emailTextField,
-            submitButton
-        ].forEach(view.addSubview)
+        [closeButton, titleLabel, descriptionLabel, emailLabel, emailTextField, submitButton].forEach { view.addSubview($0) }
     }
     
     private func setupConstraints() {
         closeButton.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
             make.trailing.equalToSuperview().offset(-20)
-            make.width.height.equalTo(24)
+            make.size.equalTo(24)
         }
         
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(closeButton.snp.bottom).offset(40)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(16)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         emailLabel.snp.makeConstraints { make in
             make.top.equalTo(descriptionLabel.snp.bottom).offset(24)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         emailTextField.snp.makeConstraints { make in
             make.top.equalTo(emailLabel.snp.bottom).offset(8)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
             make.height.equalTo(56)
         }
         
         submitButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-20)
             make.height.equalTo(56)
         }
+    }
+    
+    private func setupActions() {
+        closeButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
+        submitButton.addTarget(self, action: #selector(submitTapped), for: .touchUpInside)
+        emailTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+    }
+    
+    // MARK: - Bind
+    
+    private func bindViewModel() {
+        viewModel.forgotPasswordSuccess = { [weak self] email in
+            let changePasswordVC = ChangePasswordBuilder.build(email: email)
+            self?.navigationController?.pushViewController(changePasswordVC, animated: true)
+        }
+        
+        viewModel.errorHandling = { [weak self] errorText in
+            self?.showError(message: errorText)
+        }
+    }
+    
+    // MARK: - Actions
+    
+    @objc private func closeTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @objc private func submitTapped() {
+        guard let email = emailTextField.text, !email.isEmpty else {
+            showError(message: "Email input must be non-empty!")
+            return
+        }
+        viewModel.forgotPassword(body: ForgotPasswordRequest(email: email))
     }
     
     @objc private func textFieldDidChange() {
@@ -134,45 +155,7 @@ class ForgotPasswordController: UIViewController {
         submitButton.alpha = hasText ? 1.0 : 0.5
     }
     
-    private func setupActions() {
-        closeButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
-        submitButton.addTarget(self, action: #selector(submitTapped), for: .touchUpInside)
-    }
-    
-    @objc private func closeTapped() {
-        navigationController?.popViewController(animated: true)
-    }
-    
-    @objc private func submitTapped() {
-        
-        guard let email = emailTextField.text, !email.isEmpty else {
-            
-            self.present(
-                AlertHelper.showAlert(title: "Warning!", message: "Email input must be non-empty!"),
-                animated: true
-            )
-            
-            return
-        }
-                
-        let body = ForgotPasswordRequest(email: email)
-        viewModel.forgotPassword(body: body)
-    }
-    
-    private func bindViewModel() {
-        viewModel.forgotPasswordSuccess = {[weak self]  email in
-            guard let self else { return }
-            
-            let changePasswordVC = ChangePasswordBuilder.build(email: email)
-            navigationController?.pushViewController(changePasswordVC, animated: true)
-        }
-        
-        viewModel.errorHandling = { [weak self] errorText in
-            guard let self else { return }
-            self.present(
-                AlertHelper.showAlert(title: "Warning!", message: errorText),
-                animated: true
-            )
-        }
+    private func showError(message: String) {
+        present(AlertHelper.showAlert(title: "Warning!", message: message), animated: true)
     }
 }

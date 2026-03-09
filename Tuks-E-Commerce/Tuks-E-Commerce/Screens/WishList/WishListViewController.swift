@@ -38,42 +38,42 @@ final class WishListViewController: UIViewController {
         return button
     }()
     
-    let viewModel: WishListViewModel
+    private let viewModel: WishListViewModel
     
-    // MARK: - Lifecycle
+    // MARK: - Init
     
     init(viewModel: WishListViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError() }
+
+    //MARK: - Life Cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
-        addSubviews()
+        setupUI()
         setupConstraints()
         bindViewModel()
-        
         cartButton.addTarget(self, action: #selector(cartTapped), for: .touchUpInside)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
-        
         viewModel.refreshWishlist()
     }
     
     // MARK: - Setup
-    
-    private func addSubviews() {
-        view.addSubview(titleLabel)
-        view.addSubview(cartButton)
-        view.addSubview(collectionView)
+        
+    private func setupUI() {
+        [
+            titleLabel,
+            cartButton,
+            collectionView
+        ].forEach { view.addSubview($0) }
     }
     
     private func setupConstraints() {
@@ -95,31 +95,22 @@ final class WishListViewController: UIViewController {
     }
     
     @objc private func cartTapped() {
-        let cartVC = BasketViewController(
-            viewModel: BasketViewModel(networkService: DefaultNetworkService())
-        )
+        let cartVC = BasketBuilder.build()
         navigationController?.pushViewController(cartVC, animated: true)
     }
     
     private func bindViewModel() {
         viewModel.fetchProductSuccess = { [weak self] in
-            guard let self else { return }
-            
-            self.collectionView.reloadData()
+            self?.collectionView.reloadData()
         }
         
         viewModel.errorHandling = { [weak self] errorText in
-            guard let self else { return }
-            
-            self.present(
-                AlertHelper.showAlert(
-                    title: "Error",
-                    message: "Error happened while load wishlist products"
-                ),
-                animated: true
-            )
-            
+            self?.showError(message: "Error happened while loading wishlist products")
         }
+    }
+    
+    private func showError(message: String) {
+        present(AlertHelper.showAlert(title: "Error", message: message), animated: true)
     }
 }
 
@@ -134,18 +125,16 @@ extension WishListViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView,
                         cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: ProductCollectionViewCell.identifier,
-            for: indexPath
-        ) as? ProductCollectionViewCell else { return UICollectionViewCell() }
         
-        cell.configure(with: viewModel.productAll[indexPath.item])
-        
-        cell.onFavoriteTapped = { [weak self] in
-            guard let self else { return }
-            viewModel.addWishlist(id: viewModel.productAll[indexPath.item].id)
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductCollectionViewCell.identifier, for: indexPath) as? ProductCollectionViewCell else {
+            return UICollectionViewCell()
         }
         
+        let product = viewModel.productAll[indexPath.item]
+        cell.configure(with: product)
+        cell.onFavoriteTapped = { [weak self] in
+            self?.viewModel.addWishlist(id: product.id)
+        }
         return cell
     }
 }
@@ -157,24 +146,11 @@ extension WishListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView,
                         didSelectItemAt indexPath: IndexPath) {
         let product = viewModel.productAll[indexPath.item]
-            let detailVM = ProductDetailViewModel(
-                networkService: DefaultNetworkService(),
-                id: product.id
-            )
-        let detailVC = ProductDetailViewController(
-            viewModel: detailVM,
-            wishlistViewModel: WishListViewModel(
-                networkService: DefaultNetworkService()
-            ),
-            basketViewModel: BasketViewModel(
-                networkService: DefaultNetworkService()
-            )
-        )
-            navigationController?.pushViewController(detailVC, animated: true)
+        let detailVC = ProductDetailBuilder.build(productId: product.id)
+        navigationController?.pushViewController(detailVC, animated: true)
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        
         viewModel.pagination(index: indexPath.row)
     }
 }

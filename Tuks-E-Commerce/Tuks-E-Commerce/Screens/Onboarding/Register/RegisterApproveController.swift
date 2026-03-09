@@ -1,7 +1,9 @@
 import UIKit
 import SnapKit
 
-class RegisterApproveController: UIViewController {
+final class RegisterApproveController: UIViewController {
+    
+    // MARK: - UI Elements
     
     private let backButton: UIButton = {
         let button = UIButton(type: .system)
@@ -20,14 +22,10 @@ class RegisterApproveController: UIViewController {
     
     private let descriptionLabel: UILabel = {
         let label = UILabel()
-        label.numberOfLines = 0
+        label.text = "We sent a code to your email."
         label.font = .systemFont(ofSize: 15)
         label.textColor = .gray
-        
-        let fullText = "We sent a code to your email."
-        let attributedString = NSMutableAttributedString(string: fullText)
-        
-        label.attributedText = attributedString
+        label.numberOfLines = 0
         return label
     }()
     
@@ -65,23 +63,34 @@ class RegisterApproveController: UIViewController {
         return label
     }()
     
-    private let continueButton: UIButton = {
+    private let continueButton: MainButton = {
         let button = MainButton(text: "Continue")
         button.isEnabled = false
         button.alpha = 0.5
         return button
     }()
     
-    let viewModel: RegisterApproveViewModel
+    // MARK: - Properties
     
+    private let viewModel: RegisterApproveViewModel
+    
+    // MARK: - Init
+
+    init(viewModel: RegisterApproveViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+    
+    // MARK: - Lifecycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
         setupActions()
         bindViewModel()
-        
-        codeTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -89,81 +98,93 @@ class RegisterApproveController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
     
-    init(viewModel: RegisterApproveViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
+    // MARK: - Setup
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     private func setupUI() {
         view.backgroundColor = .accent
-        
         codeContainerView.addSubview(codeTextField)
-            
-        [
-            backButton,
-            titleLabel,
-            descriptionLabel,
-            codeLabel,
-            codeContainerView,
-            helperLabel,
-            continueButton
-        ].forEach(view.addSubview)
+        [backButton, titleLabel, descriptionLabel, codeLabel, codeContainerView, helperLabel, continueButton].forEach { view.addSubview($0) }
     }
     
     private func setupConstraints() {
         backButton.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
             make.leading.equalToSuperview().offset(20)
-            make.width.height.equalTo(24)
+            make.size.equalTo(24)
         }
         
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(backButton.snp.bottom).offset(40)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(16)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         codeLabel.snp.makeConstraints { make in
             make.top.equalTo(descriptionLabel.snp.bottom).offset(32)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         codeContainerView.snp.makeConstraints { make in
             make.top.equalTo(codeLabel.snp.bottom).offset(8)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
             make.height.equalTo(56)
         }
         
         codeTextField.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
+            make.leading.trailing.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
         }
         
         helperLabel.snp.makeConstraints { make in
             make.top.equalTo(codeContainerView.snp.bottom).offset(12)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         continueButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-20)
             make.height.equalTo(56)
         }
+    }
+    
+    private func setupActions() {
+        backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
+        continueButton.addTarget(self, action: #selector(continueTapped), for: .touchUpInside)
+        codeTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+    }
+    
+    // MARK: - Bind
+    
+    private func bindViewModel() {
+        viewModel.approveSuccess = { [weak self] in
+            guard let self else { return }
+            let successVC = SuccessViewController.accountCreated { [weak self] in
+                self?.navigationController?.popToRootViewController(animated: true)
+            }
+            navigationController?.pushViewController(successVC, animated: true)
+        }
+        
+        viewModel.errorHandling = { [weak self] errorText in
+            self?.showError(message: errorText)
+        }
+    }
+    
+    // MARK: - Actions
+    
+    @objc private func backTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @objc private func continueTapped() {
+        guard let code = codeTextField.text, !code.isEmpty else {
+            showError(message: "Code input must be non-empty!")
+            return
+        }
+        viewModel.registerApprove(body: RegisterApproveRequest(code: code))
     }
     
     @objc private func textFieldDidChange() {
@@ -172,48 +193,7 @@ class RegisterApproveController: UIViewController {
         continueButton.alpha = hasText ? 1.0 : 0.5
     }
     
-    private func setupActions() {
-        backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
-        continueButton.addTarget(self, action: #selector(continueTapped), for: .touchUpInside)
-    }
-    
-    @objc private func backTapped() {
-        navigationController?.popViewController(animated: true)
-    }
-    
-    @objc private func continueTapped() {
-        guard let code = codeTextField.text, !code.isEmpty else {
-            self.present(
-                AlertHelper.showAlert(title: "Warning!", message: "Code input must be non-empty!"),
-                animated: true
-            )
-            return
-        }
-        
-        let body = RegisterApproveRequest(code: code)
-        viewModel.registerApprove(body: body)
-    }
-    
-    private func bindViewModel() {
-        viewModel.approveSuccess = { [weak self] in
-            guard let self else { return }
-            
-            let successVC = SuccessViewController.accountCreated { [weak self] in
-                self?.navigateToLogin()
-            }
-            navigationController?.pushViewController(successVC, animated: true)
-        }
-        
-        viewModel.errorHandling = { [weak self] errorText in
-            guard let self else { return }
-            self.present(
-                AlertHelper.showAlert(title: "Warning!", message: errorText),
-                animated: true
-            )
-        }
-    }
-    
-    private func navigateToLogin() {
-        navigationController?.popToRootViewController(animated: true)
+    private func showError(message: String) {
+        present(AlertHelper.showAlert(title: "Warning!", message: message), animated: true)
     }
 }

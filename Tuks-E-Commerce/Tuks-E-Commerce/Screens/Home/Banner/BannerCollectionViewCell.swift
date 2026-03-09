@@ -3,7 +3,7 @@ import SnapKit
 
 final class BannerCollectionViewCell: UICollectionViewCell {
 
-    static let identifier = "BannerCollectionViewCell"
+    static let identifier = String(describing: BannerCollectionViewCell.self)
 
     // MARK: - UI Elements
 
@@ -19,15 +19,22 @@ final class BannerCollectionViewCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setupUI()
+        setupConstraints()
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+    
+    // MARK: - Setup
+    
+    private func setupUI() {
         contentView.addSubview(bannerImageView)
-        
+    }
+
+    private func setupConstraints() {
         bannerImageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError()
     }
 
     // MARK: - Configure

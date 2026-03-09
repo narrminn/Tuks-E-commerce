@@ -2,9 +2,12 @@ import UIKit
 import SnapKit
 
 final class ThumbnailCell: UICollectionViewCell {
-    static let reuseID = "ThumbnailCell"
+    
+    static let reuseID = String(describing: ThumbnailCell.self)
 
-    private lazy var imageView: UIImageView = {
+    //MARK: - UI Elements
+    
+    private let imageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFill
         iv.backgroundColor = UIColor(white: 0.95, alpha: 1)
@@ -13,7 +16,7 @@ final class ThumbnailCell: UICollectionViewCell {
         return iv
     }()
 
-    private lazy var overlayLabel: UILabel = {
+    private let overlayLabel: UILabel = {
         let lbl = UILabel()
         lbl.textColor = .white
         lbl.font = .boldSystemFont(ofSize: 14)
@@ -24,31 +27,46 @@ final class ThumbnailCell: UICollectionViewCell {
         lbl.isHidden = true
         return lbl
     }()
+    
+    //MARK: - Init
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setupUI()
+        setupConstraints()
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+    
+    //MARK: - Setup
+
+    private func setupUI() {
         contentView.layer.cornerRadius = 10
         contentView.layer.borderWidth = 2
         contentView.layer.borderColor = UIColor.clear.cgColor
-        contentView.addSubview(imageView)
-        contentView.addSubview(overlayLabel)
+        
+        [imageView, overlayLabel].forEach { contentView.addSubview($0) }
+    }
+
+    private func setupConstraints() {
         imageView.snp.makeConstraints { $0.edges.equalToSuperview() }
         overlayLabel.snp.makeConstraints { $0.edges.equalToSuperview() }
     }
 
-    required init?(coder: NSCoder) { fatalError() }
-
     func configure(imageUrl: String, isSelected: Bool, isLast: Bool, remaining: Int) {
-            contentView.layer.borderColor = isSelected
-                ? UIColor.systemBlue.cgColor : UIColor.clear.cgColor
+        contentView.layer.borderColor = isSelected ? UIColor.systemBlue.cgColor : UIColor.clear.cgColor
 
         imageView.loadImage(fullURL: imageUrl)
 
-            if isLast && remaining > 0 {
-                overlayLabel.text = "+\(remaining)"
-                overlayLabel.isHidden = false
-            } else {
-                overlayLabel.isHidden = true
-            }
-        }
+        overlayLabel.isHidden = !(isLast && remaining > 0)
+        overlayLabel.text = "+\(remaining)"
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageView.image = nil
+        overlayLabel.isHidden = true
+        overlayLabel.text = nil
+        contentView.layer.borderColor = UIColor.clear.cgColor
+    }
 }

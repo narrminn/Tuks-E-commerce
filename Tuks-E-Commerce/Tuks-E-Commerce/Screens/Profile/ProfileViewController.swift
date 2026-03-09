@@ -72,9 +72,7 @@ final class ProfileViewController: UIViewController {
         return tv
     }()
     
-    private let logoutButton: UIButton = {
-        return MainButton(text: "Logout")
-    }()
+    private let logoutButton = MainButton(text: "Logout")
     
     // MARK: - Data
     
@@ -89,43 +87,35 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
-        addSubviews()
+        setupUI()
         setupConstraints()
         bindActions()
-        
-        nameLabel.text = (UserDefaults.standard.string(forKey: UserDefaultsKeys.name) ?? "") +
-        " " + (
-            UserDefaults.standard.string(forKey: UserDefaultsKeys.surname) ?? ""
-        )
-        
-        emailLabel.text = UserDefaults.standard
-            .string(forKey: UserDefaultsKeys.email) ?? ""
-        
-        if let profileImage = UserDefaults.standard.string(
-            forKey: UserDefaultsKeys.profilePhotoPath
-        ) {
-            profileImageView.loadImage(url: profileImage)
-        }
+        loadUserInfo()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        loadUserInfo()
     }
     
     // MARK: - Setup
     
-    private func addSubviews() {
-        userInfoStack.addArrangedSubview(nameLabel)
-        userInfoStack.addArrangedSubview(emailLabel)
+    private func setupUI() {
+        [
+            nameLabel,
+            emailLabel
+        ].forEach { userInfoStack.addArrangedSubview($0) }
         
-        view.addSubview(titleLabel)
-        view.addSubview(profileImageView)
-        view.addSubview(userInfoStack)
-        view.addSubview(editButton)
-        view.addSubview(aboutTitleLabel)
-        view.addSubview(tableView)
-        view.addSubview(logoutButton)
+        [
+            titleLabel,
+            profileImageView,
+            userInfoStack,
+            editButton,
+            aboutTitleLabel,
+            tableView,
+            logoutButton
+        ].forEach { view.addSubview($0) }
     }
     
     private func setupConstraints() {
@@ -170,6 +160,17 @@ final class ProfileViewController: UIViewController {
         }
     }
     
+    private func loadUserInfo() {
+        let name = UserDefaults.standard.string(forKey: UserDefaultsKeys.name) ?? ""
+        let surname = UserDefaults.standard.string(forKey: UserDefaultsKeys.surname) ?? ""
+        nameLabel.text = "\(name) \(surname)"
+        emailLabel.text = UserDefaults.standard.string(forKey: UserDefaultsKeys.email) ?? ""
+        
+        if let photoPath = UserDefaults.standard.string(forKey: UserDefaultsKeys.profilePhotoPath) {
+            profileImageView.loadImage(url: photoPath)
+        }
+    }
+    
     // MARK: - Actions
     
     private func bindActions() {
@@ -178,12 +179,7 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc private func editTapped() {
-        let networkService = DefaultNetworkService()
-        
-        let vc = ProfileUpdateViewController(
-            viewModel: ProfileViewModel(networkService: networkService),
-            fileViewModel: FileUploadViewModel(networkService: networkService)
-        )
+        let vc = ProfileUpdateBuilder.build()
         navigationController?.pushViewController(vc, animated: true)
     }
     

@@ -3,7 +3,9 @@ import SnapKit
 
 final class AboutTuksCell: UITableViewCell {
     
-    static let identifier = "AboutTuksCell"
+    static let identifier = String(describing: AboutTuksCell.self)
+    
+    //MARK: - UI Elements
     
     private let iconBackground: UIView = {
         let view = UIView()
@@ -25,21 +27,25 @@ final class AboutTuksCell: UITableViewCell {
         return label
     }()
     
+    //MARK: - Init
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         accessoryType = .disclosureIndicator
         setupUI()
+        setupConstraints()
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    required init?(coder: NSCoder) { fatalError() }
+    
+    //MARK: - Setup
     
     private func setupUI() {
         iconBackground.addSubview(iconView)
-        contentView.addSubview(iconBackground)
-        contentView.addSubview(titleLabel)
-        
+        [iconBackground, titleLabel].forEach { contentView.addSubview($0) }
+    }
+    
+    private func setupConstraints() {
         iconBackground.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(16)
             make.centerY.equalToSuperview()

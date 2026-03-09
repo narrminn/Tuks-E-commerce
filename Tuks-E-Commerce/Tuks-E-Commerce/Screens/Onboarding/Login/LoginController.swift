@@ -1,8 +1,10 @@
 import UIKit
 import SnapKit
 
-class LoginController: UIViewController {
+final class LoginController: UIViewController {
     
+    // MARK: - UI Elements
+
     private let logoImageView: UIImageView = {
         let iv = UIImageView()
         iv.image = UIImage(named: "tuks_logo")
@@ -19,45 +21,31 @@ class LoginController: UIViewController {
         return stack
     }()
     
-    private let emailTextField: UITextField = {
-        CustomTextField(
-            placeholder: "Email",
-            keyboardType: .emailAddress
-        )
-    }()
-    
-    private let passwordTextField: UITextField = {
-        return CustomTextField(
-            placeholder: "Password",
-            keyboardType: .default,
-            isSecure: true
-        )
-    }()
+    private let emailTextField = CustomTextField(placeholder: "Email", keyboardType: .emailAddress)
+    private let passwordTextField = CustomTextField(placeholder: "Password", keyboardType: .default, isSecure: true)
     
     private let forgotPasswordButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("Forgot your password?", for: .normal)
         btn.setTitleColor(.black, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+        btn.titleLabel?.font = .systemFont(ofSize: 14, weight: .semibold)
         return btn
     }()
     
-    private let signInButton: UIButton = {
-        return MainButton(text: "Sign in")
-    }()
+    private let signInButton = MainButton(text: "Sign in")
     
     private let createAccountButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("Create new account", for: .normal)
         btn.setTitleColor(.black, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .medium)
+        btn.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         return btn
     }()
     
     private let continueLabel: UILabel = {
         let label = UILabel()
         label.text = "Or continue with"
-        label.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+        label.font = .systemFont(ofSize: 14, weight: .semibold)
         label.textColor = .label
         label.textAlignment = .center
         return label
@@ -71,102 +59,51 @@ class LoginController: UIViewController {
         return stack
     }()
     
-    private let googleContainer: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(red: 0.93, green: 0.93, blue: 0.93, alpha: 1)
-        view.layer.cornerRadius = 12
-        return view
-    }()
+    private let googleContainer = SocialContainerView()
+    private let facebookContainer = SocialContainerView()
+    private let appleContainer = SocialContainerView()
     
-    private let facebookContainer: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(red: 0.93, green: 0.93, blue: 0.93, alpha: 1)
-        view.layer.cornerRadius = 12
-        return view
-    }()
+    private let googleImageView = SocialIconView(named: "google_icon")
+    private let facebookImageView = SocialIconView(named: "facebook_icon")
+    private let appleImageView = SocialIconView(named: "apple_icon")
     
-    private let appleContainer: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(red: 0.93, green: 0.93, blue: 0.93, alpha: 1)
-        view.layer.cornerRadius = 12
-        return view
-    }()
+    // MARK: - Properties
     
-    private let googleImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.image = UIImage(named: "google_icon")
-        iv.contentMode = .scaleAspectFit
-        iv.clipsToBounds = true
-        return iv
-    }()
+    private let viewModel: LoginViewModel
     
-    private let facebookImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.image = UIImage(named: "facebook_icon")
-        iv.contentMode = .scaleAspectFit
-        iv.clipsToBounds = true
-        return iv
-    }()
-    
-    private let appleImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.image = UIImage(named: "apple_icon")
-        iv.contentMode = .scaleAspectFit
-        iv.clipsToBounds = true
-        return iv
-    }()
-    
-    let viewModel: LoginViewModel
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-        setupActions()
-        bindViewModel()
-        
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(showPasswordChangedAlert),
-            name: .passwordChanged,
-            object: nil
-        )
-    }
-    
+    // MARK: - Init
+
     init(viewModel: LoginViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    required init?(coder: NSCoder) { fatalError() }
+    
+    // MARK: - Lifecycle
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+        setupConstraints()
+        setupActions()
+        bindViewModel()
+        addObservers()
     }
     
+    // MARK: - Setup
+
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
-        googleContainer.addSubview(googleImageView)
-        facebookContainer.addSubview(facebookImageView)
-        appleContainer.addSubview(appleImageView)
-        
-        socialStackView.addArrangedSubview(googleContainer)
-        socialStackView.addArrangedSubview(facebookContainer)
-        socialStackView.addArrangedSubview(appleContainer)
-        
-        fieldsStackView.addArrangedSubview(emailTextField)
-        fieldsStackView.addArrangedSubview(passwordTextField)
-        
-        [
-            logoImageView,
-            fieldsStackView,
-            forgotPasswordButton,
-            signInButton,
-            createAccountButton,
-            continueLabel,
-            socialStackView
-        ].forEach(view.addSubview)
-            
-            setupConstraints()
+        [googleImageView, facebookImageView, appleImageView].enumerated().forEach { index, icon in
+            [googleContainer, facebookContainer, appleContainer][index].addSubview(icon)
         }
+        
+        [googleContainer, facebookContainer, appleContainer].forEach { socialStackView.addArrangedSubview($0) }
+        [emailTextField, passwordTextField].forEach { fieldsStackView.addArrangedSubview($0) }
+        [logoImageView, fieldsStackView, forgotPasswordButton, signInButton, createAccountButton, continueLabel, socialStackView].forEach { view.addSubview($0) }
+    }
         
     private func setupConstraints() {
         logoImageView.snp.makeConstraints { make in
@@ -216,31 +153,49 @@ class LoginController: UIViewController {
             make.height.equalTo(50)
         }
         
-        googleImageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalTo(50)
-        }
-        
-        facebookImageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalTo(50)
-        }
-        
-        appleImageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalTo(50)
+        [googleImageView, facebookImageView, appleImageView].forEach { icon in
+            icon.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+                make.size.equalTo(50)
+            }
         }
     }
     
     private func setupActions() {
         createAccountButton.addTarget(self, action: #selector(createAccountTapped), for: .touchUpInside)
         signInButton.addTarget(self, action: #selector(signInTapped), for: .touchUpInside)
-        forgotPasswordButton.addTarget(self,action: #selector(forgotPasswordTapped),for: .touchUpInside)
+        forgotPasswordButton.addTarget(self, action: #selector(forgotPasswordTapped), for: .touchUpInside)
     }
+    
+    private func addObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(showPasswordChangedAlert),
+            name: .passwordChanged,
+            object: nil
+        )
+    }
+    
+    // MARK: - Bind
+    
+    private func bindViewModel() {
+        viewModel.loginSuccess = { [weak self] loginResponseData in
+            guard let self, let token = loginResponseData.token else { return }
+            saveUserData(data: loginResponseData)
+            _ = KeychainManager.shared.save(key: "token", value: token)
+            navigateToMainApp()
+        }
+        
+        viewModel.errorHandling = { [weak self] errorText in
+            self?.showError(message: errorText)
+        }
+    }
+    
+    // MARK: - Actions
     
     @objc private func forgotPasswordTapped() {
         let forgotPasswordVC = ForgotPasswordBuilder.build()
-            navigationController?.pushViewController(forgotPasswordVC, animated: true)
+        navigationController?.pushViewController(forgotPasswordVC, animated: true)
     }
     
     @objc private func createAccountTapped() {
@@ -248,86 +203,45 @@ class LoginController: UIViewController {
         navigationController?.pushViewController(registerVC, animated: true)
     }
     
-    @objc private func showPasswordChangedAlert() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            guard let self else { return }
-            self.present(
-                AlertHelper.showAlert(
-                    title: "Success",
-                    message: "Your password has been changed successfully!"
-                ),
-                animated: true
-            )
-        }
-    }
-    
     @objc private func signInTapped() {
         guard let email = emailTextField.text, !email.isEmpty,
-              let password = passwordTextField.text, !password.isEmpty
-        
-        else {
-            
-            self.present(
-                AlertHelper.showAlert(
-                    title: "Warning!",
-                    message: "All input fields must be non-empty"
-                ),
-                animated: true
-            )
-            
+              let password = passwordTextField.text, !password.isEmpty else {
+            showError(message: "All input fields must be non-empty")
             return
         }
-        
         viewModel.login(body: LoginRequest(email: email, password: password))
-        
     }
     
-    private func bindViewModel() {
-        viewModel.loginSuccess = { [weak self ] loginResponseData in
-            guard let self else { return }
-            guard let token = loginResponseData.token else { return }
-            
-            saveUserDefaultsKeys(data: loginResponseData)
-            
-            let _ = KeychainManager.shared.save(key: "token", value: token)
-            
-            navigateToMainApp()
-        }
-        
-        viewModel.errorHandling = { [weak self] errorText in
-            guard let self else { return }
-            
-            self.present(
-                AlertHelper.showAlert(
-                    title: "Warning!",
-                    message: errorText
-                ),
+    @objc private func showPasswordChangedAlert() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.present(
+                AlertHelper.showAlert(title: "Success", message: "Your password has been changed successfully!"),
                 animated: true
             )
         }
     }
+    
+    // MARK: - Helpers
     
     private func navigateToMainApp() {
         let tabBar = MainTabBarController()
         tabBar.modalPresentationStyle = .fullScreen
-        self.present(tabBar, animated: true)
+        present(tabBar, animated: true)
     }
     
-    private func saveUserDefaultsKeys(data: LoginResponseData) {
-        UserDefaults.standard.set(data.user?.id, forKey: UserDefaultsKeys.userId)
-        
-        UserDefaults.standard.set(data.user?.name, forKey: UserDefaultsKeys.name)
-        
-        UserDefaults.standard.set(data.user?.surname, forKey: UserDefaultsKeys.surname)
-        
-        UserDefaults.standard.set(data.user?.email, forKey: UserDefaultsKeys.email)
-        
-        UserDefaults.standard.set(data.user?.phone, forKey: UserDefaultsKeys.phone)
-        
-        UserDefaults.standard.set(data.user?.birth, forKey: UserDefaultsKeys.birth)
-        
-        UserDefaults.standard.set(data.user?.profilePhotoPath, forKey: UserDefaultsKeys.profilePhotoPath)
-        
-        UserDefaults.standard.set(data.user?.profilePhotoUUID, forKey: UserDefaultsKeys.profilePhotoUuid)
+    private func saveUserData(data: LoginResponseData) {
+        let defaults = UserDefaults.standard
+        defaults.set(data.user?.id, forKey: UserDefaultsKeys.userId)
+        defaults.set(data.user?.name, forKey: UserDefaultsKeys.name)
+        defaults.set(data.user?.surname, forKey: UserDefaultsKeys.surname)
+        defaults.set(data.user?.email, forKey: UserDefaultsKeys.email)
+        defaults.set(data.user?.phone, forKey: UserDefaultsKeys.phone)
+        defaults.set(data.user?.birth, forKey: UserDefaultsKeys.birth)
+        defaults.set(data.user?.profilePhotoPath, forKey: UserDefaultsKeys.profilePhotoPath)
+        defaults.set(data.user?.profilePhotoUUID, forKey: UserDefaultsKeys.profilePhotoUuid)
+    }
+    
+    private func showError(message: String) {
+        present(AlertHelper.showAlert(title: "Warning!", message: message), animated: true)
     }
 }

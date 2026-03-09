@@ -3,7 +3,7 @@ import SnapKit
 
 final class HeaderCollectionViewCell: UICollectionViewCell {
 
-    static let identifier = "HeaderCollectionViewCell"
+    static let identifier = String(describing: HeaderCollectionViewCell.self)
 
     var onSearchTapped: (() -> Void)?
 

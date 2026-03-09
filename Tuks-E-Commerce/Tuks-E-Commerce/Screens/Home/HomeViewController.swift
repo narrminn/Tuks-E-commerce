@@ -59,8 +59,10 @@ final class HomeViewController: UIViewController {
         return button
     }()
     
-    let viewModel: HomeViewModel
-    let wishlistViewModel: WishListViewModel
+    private let viewModel: HomeViewModel
+    private let wishlistViewModel: WishListViewModel
+    
+    // MARK: - Init
     
     init(viewModel: HomeViewModel, wishlistViewModel: WishListViewModel) {
         self.viewModel = viewModel
@@ -76,62 +78,40 @@ final class HomeViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = .systemGray6
-        
-        addSubviews()
+        setupUI()
         setupConstraints()
         bindActions()
         bindViewModel()
-        
-        nameLabel.text = (UserDefaults.standard.string(forKey: UserDefaultsKeys.name) ?? "") +
-        " " + (
-            UserDefaults.standard.string(forKey: UserDefaultsKeys.surname) ?? ""
-        )
-        
-        if let profileImage = UserDefaults.standard.string(
-            forKey: UserDefaultsKeys.profilePhotoPath
-        ) {
-            profileImageView.loadImage(url: profileImage)
-        }
+        loadUserInfo()
         
         viewModel.getCompanyList()
         viewModel.getPopularProduct()
         
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(reloadHome),
-            name: .wishlistUpdated,
-            object: nil
-        )
-    }
-
-    @objc private func reloadHome(_ notification: Notification) {
-        guard let productId = notification.userInfo?["productId"] as? Int else { return }
-        
-        if let index = viewModel.productAll.firstIndex(where: { $0.id == productId }) {
-            viewModel.productAll[index].isWishlist.toggle()
-            let indexPath = IndexPath(item: index, section: HomeSection.products.rawValue)
-            collectionView.reloadItems(at: [indexPath])
-        }
+        addObservers()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
+        loadUserInfo()
     }
 
     // MARK: - Setup
-    private func addSubviews() {
+    
+    private func setupUI() {
+        [
+            greetingLabel,
+            nameLabel
+        ].forEach { greetingStackView.addArrangedSubview($0) }
         
-        greetingStackView.addArrangedSubview(greetingLabel)
-        greetingStackView.addArrangedSubview(nameLabel)
-        
-        view.addSubview(profileImageView)
-        view.addSubview(greetingStackView)
-        view.addSubview(cartButton)
-        view.addSubview(searchView)
-        view.addSubview(collectionView)
+        [
+            profileImageView,
+            greetingStackView,
+            cartButton,
+            searchView,
+            collectionView
+        ].forEach { view.addSubview($0) }
     }
 
     private func setupConstraints() {
@@ -184,6 +164,37 @@ final class HomeViewController: UIViewController {
             withReuseIdentifier: SectionHeaderView.identifier
         )
     }
+    
+    
+    private func loadUserInfo() {
+        let name = UserDefaults.standard.string(forKey: UserDefaultsKeys.name) ?? ""
+        let surname = UserDefaults.standard.string(forKey: UserDefaultsKeys.surname) ?? ""
+        nameLabel.text = "\(name) \(surname)"
+        
+        if let profileImage = UserDefaults.standard.string(forKey: UserDefaultsKeys.profilePhotoPath) {
+            profileImageView.loadImage(url: profileImage)
+        }
+    }
+    
+    private func addObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reloadHome),
+            name: .wishlistUpdated,
+            object: nil
+        )
+    }
+    
+    @objc private func reloadHome(_ notification: Notification) {
+        guard let productId = notification.userInfo?["productId"] as? Int else { return }
+        
+        if let index = viewModel.productAll.firstIndex(where: { $0.id == productId }) {
+            viewModel.productAll[index].isWishlist.toggle()
+            let indexPath = IndexPath(item: index, section: HomeSection.products.rawValue)
+            collectionView.reloadItems(at: [indexPath])
+        }
+    }
+
 
     // MARK: - Bind
 
@@ -197,47 +208,30 @@ final class HomeViewController: UIViewController {
     
     private func bindViewModel() {
         viewModel.fetchProductSuccess = { [weak self] in
-            guard let self else { return }
-            self.collectionView.reloadData()
+            self?.collectionView.reloadData()
         }
         
-        viewModel.errorHandling = { [weak self] errorText in
-            guard let self else { return }
-            
-            self.present(
-                AlertHelper.showAlert(
-                    title: "Error",
-                    message: "Error happened while load products"
-                ),
-                animated: true
-            )
+        viewModel.fetchCompanyListSuccess = { [weak self] in
+            self?.collectionView.reloadData()
         }
         
-        wishlistViewModel.errorHandling = { [weak self] errorText in
-            guard let self else { return }
-            
-            self.present(
-                AlertHelper.showAlert(
-                    title: "Error",
-                    message: "Error happened while wishlist products"
-                ),
-                animated: true
-            )
+        viewModel.errorHandling = { [weak self] _ in
+            self?.showError(message: "Error happened while loading products")
         }
         
-        viewModel.fetchCompanyListSuccess = { [weak self ] in
-            guard let self else { return }
-            
-            self.collectionView.reloadData()
+        wishlistViewModel.errorHandling = { [weak self] _ in
+            self?.showError(message: "Error happened while updating wishlist")
         }
+    }
+    
+    private func showError(message: String) {
+        present(AlertHelper.showAlert(title: "Error", message: message), animated: true)
     }
 
     // MARK: - Actions
 
     @objc private func cartTapped() {
-        let cartVC = BasketViewController(
-            viewModel: BasketViewModel(networkService: DefaultNetworkService())
-        )
+        let cartVC = BasketBuilder.build()
         navigationController?.pushViewController(cartVC, animated: true)
     }
 
@@ -270,6 +264,7 @@ extension HomeViewController: UICollectionViewDataSource {
         _ collectionView: UICollectionView,
         cellForItemAt indexPath: IndexPath
     ) -> UICollectionViewCell {
+        
         guard let sectionType = HomeSection(rawValue: indexPath.section) else {
             return UICollectionViewCell()
         }
@@ -282,6 +277,7 @@ extension HomeViewController: UICollectionViewDataSource {
             ) as? BrandCollectionViewCell else {
                 return UICollectionViewCell()
             }
+            
             guard let company = viewModel.companyListResponse?.data?.companies?[indexPath.row] else {
                 return cell
             }
@@ -296,6 +292,7 @@ extension HomeViewController: UICollectionViewDataSource {
             ) as? BannerCollectionViewCell else {
                 return UICollectionViewCell()
             }
+            
             cell.configure(imageName: MockData.bannerImages[indexPath.item])
             return cell
 
@@ -307,15 +304,11 @@ extension HomeViewController: UICollectionViewDataSource {
                 return UICollectionViewCell()
             }
             
-            cell.configure(with: viewModel.productAll[indexPath.row])
-            
-            cell.onFavoriteTapped = {[weak self] in
-                guard let self else { return }
-                
-                wishlistViewModel.addWishlist(id: viewModel.productAll[indexPath.row].id)
-                
-            }
-            
+            let product = viewModel.productAll[indexPath.row]
+                cell.configure(with: product)
+                cell.onFavoriteTapped = { [weak self] in
+                    self?.wishlistViewModel.addWishlist(id: product.id)
+                }
             return cell
         }
     }
@@ -325,6 +318,7 @@ extension HomeViewController: UICollectionViewDataSource {
         viewForSupplementaryElementOfKind kind: String,
         at indexPath: IndexPath
     ) -> UICollectionReusableView {
+        
         guard kind == UICollectionView.elementKindSectionHeader,
               let sectionType = HomeSection(rawValue: indexPath.section),
               let title = sectionType.title,
@@ -355,19 +349,7 @@ extension HomeViewController: UICollectionViewDelegate {
         switch sectionType {
         case .products:
             let product = viewModel.productAll[indexPath.item]
-            let detailVM = ProductDetailViewModel(
-                networkService: DefaultNetworkService(),
-                id: product.id
-            )
-            let detailVC = ProductDetailViewController(
-                viewModel: detailVM,
-                wishlistViewModel: WishListViewModel(
-                    networkService: DefaultNetworkService()
-                ),
-                basketViewModel: BasketViewModel(
-                    networkService: DefaultNetworkService()
-                )
-            )
+            let detailVC = ProductDetailBuilder.build(productId: product.id)
             navigationController?.pushViewController(detailVC, animated: true)
 
         default:

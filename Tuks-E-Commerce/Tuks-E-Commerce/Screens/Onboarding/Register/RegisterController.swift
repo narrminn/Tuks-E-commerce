@@ -1,12 +1,14 @@
 import UIKit
 import SnapKit
 
-class RegisterController: UIViewController {
+final class RegisterController: UIViewController {
     
+    // MARK: - UI Elements
+
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Create Account"
-        label.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        label.font = .systemFont(ofSize: 32, weight: .bold)
         label.textColor = .label
         label.textAlignment = .center
         return label
@@ -15,7 +17,7 @@ class RegisterController: UIViewController {
     private let subtitleLabel: UILabel = {
         let label = UILabel()
         label.text = "Create an account so you can explore all the\nproducts"
-        label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        label.font = .systemFont(ofSize: 14, weight: .regular)
         label.textColor = .black
         label.textAlignment = .center
         label.numberOfLines = 2
@@ -38,58 +40,26 @@ class RegisterController: UIViewController {
         return stack
     }()
     
-    private let nameTextField: UITextField = {
-        return CustomTextField(
-            placeholder: "Name",
-            keyboardType: .default
-        )
-    }()
+    private let nameTextField = CustomTextField(placeholder: "Name", keyboardType: .default)
+    private let surnameTextField = CustomTextField(placeholder: "Surname", keyboardType: .default)
+    private let phoneNumberTextField = CustomTextField(placeholder: "Phone number", keyboardType: .default)
+    private let emailTextField = CustomTextField(placeholder: "Email", keyboardType: .emailAddress)
+    private let passwordTextField = CustomTextField(placeholder: "Password", keyboardType: .default, isSecure: true)
     
-    private let surnameTextField: UITextField = {
-        return CustomTextField(
-            placeholder: "Surname",
-            keyboardType: .default
-        )
-    }()
-    
-    private let phoneNumberTextField: UITextField = {
-        return CustomTextField(
-            placeholder: "Phone number",
-            keyboardType: .default
-        )
-    }()
-    
-    private let emailTextField: UITextField = {
-        return CustomTextField(
-            placeholder: "Email",
-            keyboardType: .emailAddress
-        )
-    }()
-    
-    private let passwordTextField: UITextField = {
-        return CustomTextField(
-            placeholder: "Password",
-            keyboardType: .default,
-            isSecure: true
-        )
-    }()
-    
-    private let signUpButton: UIButton = {
-        return MainButton(text: "Sign up")
-    }()
+    private let signUpButton = MainButton(text: "Sign up")
     
     private let loginButton: UIButton = {
         let btn = UIButton(type: .system)
         btn.setTitle("Already have an account?", for: .normal)
         btn.setTitleColor(.black, for: .normal)
-        btn.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .medium)
+        btn.titleLabel?.font = .systemFont(ofSize: 15, weight: .medium)
         return btn
     }()
     
     private let continueLabel: UILabel = {
         let label = UILabel()
         label.text = "Or continue with"
-        label.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+        label.font = .systemFont(ofSize: 14, weight: .semibold)
         label.textColor = .label
         label.textAlignment = .center
         return label
@@ -103,100 +73,51 @@ class RegisterController: UIViewController {
         return stack
     }()
     
-    private let googleContainer: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(red: 0.93, green: 0.93, blue: 0.93, alpha: 1)
-        view.layer.cornerRadius = 12
-        return view
-    }()
+    private let googleContainer = SocialContainerView()
+    private let facebookContainer = SocialContainerView()
+    private let appleContainer = SocialContainerView()
     
-    private let facebookContainer: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(red: 0.93, green: 0.93, blue: 0.93, alpha: 1)
-        view.layer.cornerRadius = 12
-        return view
-    }()
+    private let googleImageView = SocialIconView(named: "google_icon")
+    private let facebookImageView = SocialIconView(named: "facebook_icon")
+    private let appleImageView = SocialIconView(named: "apple_icon")
     
-    private let appleContainer: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(red: 0.93, green: 0.93, blue: 0.93, alpha: 1)
-        view.layer.cornerRadius = 12
-        return view
-    }()
+    // MARK: - Properties
     
-    private let googleImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.image = UIImage(named: "google_icon")
-        iv.contentMode = .scaleAspectFit
-        iv.clipsToBounds = true
-        return iv
-    }()
+    private let viewModel: RegisterViewModel
     
-    private let facebookImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.image = UIImage(named: "facebook_icon")
-        iv.contentMode = .scaleAspectFit
-        iv.clipsToBounds = true
-        return iv
-    }()
-    
-    private let appleImageView: UIImageView = {
-        let iv = UIImageView()
-        iv.image = UIImage(named: "apple_icon")
-        iv.contentMode = .scaleAspectFit
-        iv.clipsToBounds = true
-        return iv
-    }()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-        setupActions()
-        bindViewModel()
-    }
-    
-    let viewModel: RegisterViewModel
-    
+    // MARK: - Init
+
     init(viewModel: RegisterViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    required init?(coder: NSCoder) { fatalError() }
+    
+    // MARK: - Lifecycle
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+        setupConstraints()
+        setupActions()
+        bindViewModel()
     }
     
+    // MARK: - Setup
+
     private func setupUI() {
         view.backgroundColor = .accent
         navigationItem.hidesBackButton = true
         
-        googleContainer.addSubview(googleImageView)
-        facebookContainer.addSubview(facebookImageView)
-        appleContainer.addSubview(appleImageView)
+        let containers = [googleContainer, facebookContainer, appleContainer]
+        let icons = [googleImageView, facebookImageView, appleImageView]
+        zip(containers, icons).forEach { $0.addSubview($1) }
         
-        socialStackView.addArrangedSubview(googleContainer)
-        socialStackView.addArrangedSubview(facebookContainer)
-        socialStackView.addArrangedSubview(appleContainer)
-        
-        nameAndSurnameStackView.addArrangedSubview(nameTextField)
-        nameAndSurnameStackView.addArrangedSubview(surnameTextField)
-        
-        fieldsStackView.addArrangedSubview(phoneNumberTextField)
-        fieldsStackView.addArrangedSubview(emailTextField)
-        fieldsStackView.addArrangedSubview(passwordTextField)
-        
-        [
-            titleLabel,
-            subtitleLabel,
-            nameAndSurnameStackView,
-            fieldsStackView,
-            signUpButton,
-            loginButton,
-            continueLabel,
-            socialStackView
-        ].forEach(view.addSubview)
-        
-        setupConstraints()
+        containers.forEach { socialStackView.addArrangedSubview($0) }
+        [nameTextField, surnameTextField].forEach { nameAndSurnameStackView.addArrangedSubview($0) }
+        [phoneNumberTextField, emailTextField, passwordTextField].forEach { fieldsStackView.addArrangedSubview($0) }
+        [titleLabel, subtitleLabel, nameAndSurnameStackView, fieldsStackView, signUpButton, loginButton, continueLabel, socialStackView].forEach { view.addSubview($0) }
     }
     
     private func setupConstraints() {
@@ -220,25 +141,8 @@ class RegisterController: UIViewController {
             make.leading.trailing.equalToSuperview().inset(30)
         }
         
-        nameTextField.snp.makeConstraints { make in
-            make.height.equalTo(55)
-        }
-        
-        surnameTextField.snp.makeConstraints { make in
-            make.height.equalTo(55)
-        }
-        
-        
-        phoneNumberTextField.snp.makeConstraints { make in
-            make.height.equalTo(55)
-        }
-        
-        emailTextField.snp.makeConstraints { make in
-            make.height.equalTo(55)
-        }
-        
-        passwordTextField.snp.makeConstraints { make in
-            make.height.equalTo(55)
+        [nameTextField, surnameTextField, phoneNumberTextField, emailTextField, passwordTextField].forEach {
+            $0.snp.makeConstraints { make in make.height.equalTo(55) }
         }
         
         signUpButton.snp.makeConstraints { make in
@@ -263,19 +167,11 @@ class RegisterController: UIViewController {
             make.height.equalTo(50)
         }
         
-        googleImageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalTo(50)
-        }
-        
-        facebookImageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalTo(50)
-        }
-        
-        appleImageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.width.height.equalTo(50)
+        [googleImageView, facebookImageView, appleImageView].forEach { icon in
+            icon.snp.makeConstraints { make in
+                make.center.equalToSuperview()
+                make.size.equalTo(50)
+            }
         }
     }
     
@@ -283,6 +179,21 @@ class RegisterController: UIViewController {
         loginButton.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
         signUpButton.addTarget(self, action: #selector(signUpTapped), for: .touchUpInside)
     }
+    
+    // MARK: - Bind
+    
+    private func bindViewModel() {
+        viewModel.userCreated = { [weak self] userId in
+            let confirmEmailVC = RegisterApproveBuilder.build(userId: userId)
+            self?.navigationController?.pushViewController(confirmEmailVC, animated: true)
+        }
+        
+        viewModel.errorHandling = { [weak self] errorText in
+            self?.showError(message: errorText)
+        }
+    }
+    
+    // MARK: - Actions
     
     @objc private func loginTapped() {
         navigationController?.popViewController(animated: true)
@@ -293,43 +204,17 @@ class RegisterController: UIViewController {
               let name = nameTextField.text, !name.isEmpty,
               let surname = surnameTextField.text, !surname.isEmpty,
               let phone = phoneNumberTextField.text, !phone.isEmpty,
-              let password = passwordTextField.text, !password.isEmpty
-         
-        else {
-            self.present(
-                AlertHelper.showAlert(title: "Warning!", message: "All input fields must be non-empty"),
-                animated: true
-            )
-            
+              let password = passwordTextField.text, !password.isEmpty else {
+            showError(message: "All input fields must be non-empty")
             return
         }
         
-        viewModel
-            .registerSubmit(
-                body: RegisterRequest(
-                    email: email,
-                    name: name,
-                    surname: surname,
-                    phone: phone,
-                    password: password
-                )
-            )
+        viewModel.registerSubmit(
+            body: RegisterRequest(email: email, name: name, surname: surname, phone: phone, password: password)
+        )
     }
     
-    private func bindViewModel() {
-        viewModel.userCreated = { [weak self] userId in
-            guard let self else { return }
-            
-            let confirmEmailVC = RegisterApproveBuilder.build(userId: userId)
-            navigationController?.pushViewController(confirmEmailVC, animated: true)
-        }
-        
-        viewModel.errorHandling = { [weak self] errorText in
-            guard let self else { return }
-            self.present(
-                AlertHelper.showAlert(title: "Warning!", message: errorText),
-                animated: true
-            )
-        }
+    private func showError(message: String) {
+        present(AlertHelper.showAlert(title: "Warning!", message: message), animated: true)
     }
 }

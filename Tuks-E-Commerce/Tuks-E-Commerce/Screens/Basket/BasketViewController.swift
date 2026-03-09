@@ -3,7 +3,7 @@ import SnapKit
 
 final class BasketViewController: UIViewController {
     
-    // MARK: - UI
+    // MARK: - UI Elements
         
     private lazy var backButton: UIButton = {
         let btn = UIButton(type: .system)
@@ -27,7 +27,7 @@ final class BasketViewController: UIViewController {
         tv.backgroundColor = .white
         tv.dataSource = self
         tv.delegate = self
-        tv.register(BagItemCell.self, forCellReuseIdentifier: BagItemCell.identifier)
+        tv.register(BagItemTableViewCell.self, forCellReuseIdentifier: BagItemTableViewCell.identifier)
         return tv
     }()
     
@@ -62,7 +62,7 @@ final class BasketViewController: UIViewController {
         
         setupUI()
         setupConstraints()
-        configureViewModel()
+        bindViewModel()
         viewModel.getBasketItems()
     }
     
@@ -78,13 +78,13 @@ final class BasketViewController: UIViewController {
     }
     
     
-    // MARK: - Configure ViewModel
+    // MARK: - Bind ViewModel
         
-    private func configureViewModel() {
+    private func bindViewModel() {
         viewModel.getBasketItemsSuccess = { [weak self] in
             guard let self else { return }
-            self.tableView.reloadData()
-            self.updateSummary(subtotal: Double(self.viewModel.totalPrice))
+            tableView.reloadData()
+            updateSummary(subtotal: Double(viewModel.totalPrice))
         }
         
         viewModel.errorHandling = { message in
@@ -92,17 +92,15 @@ final class BasketViewController: UIViewController {
         }
         
         viewModel.deleteBasketItemSuccess = { [weak self] in
-            guard let self else { return }
-            self.viewModel.getBasketItems()
+            self?.viewModel.getBasketItems()
         }
         
         viewModel.checkoutSuccess = { [weak self] in
-            
+            guard let self else { return }
             let successVC = SuccessViewController.orderPlaced {
-                self?.navigationController?.popToRootViewController(animated: true)
+                self.navigationController?.popToRootViewController(animated: true)
             }
-
-            self?.navigationController?.pushViewController(successVC, animated: true)
+            navigationController?.pushViewController(successVC, animated: true)
         }
     }
     
@@ -203,7 +201,10 @@ extension BasketViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: BagItemCell.identifier, for: indexPath) as! BagItemCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: BagItemTableViewCell.identifier, for: indexPath) as? BagItemTableViewCell
+        
+        guard let cell else { return UITableViewCell() }
+        
         let item = viewModel.basketItems[indexPath.row]
         cell.configure(item: item)
         cell.delegate = self

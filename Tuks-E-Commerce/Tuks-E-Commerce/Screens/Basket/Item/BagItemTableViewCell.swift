@@ -5,9 +5,9 @@ protocol BagItemCellDelegate: AnyObject {
     func bagItemCellDidTapMore(basketId: Int)
 }
 
-final class BagItemCell: UITableViewCell {
+final class BagItemTableViewCell: UITableViewCell {
     
-    static let identifier = "BagItemCell"
+    static let identifier = String(describing: BagItemTableViewCell.self)
     
     // MARK: - Properties
     
@@ -55,7 +55,7 @@ final class BagItemCell: UITableViewCell {
     private let nameLabel: UILabel = {
         let lbl = UILabel()
         lbl.font = .systemFont(ofSize: 16, weight: .medium)
-        lbl.textColor = .black
+        lbl.textColor = .label
         lbl.numberOfLines = 2
         return lbl
     }()
@@ -78,7 +78,7 @@ final class BagItemCell: UITableViewCell {
     private let priceLabel: UILabel = {
         let lbl = UILabel()
         lbl.font = .systemFont(ofSize: 16, weight: .bold)
-        lbl.textColor = .black
+        lbl.textColor = .label
         lbl.textAlignment = .right
         return lbl
     }()
@@ -99,17 +99,23 @@ final class BagItemCell: UITableViewCell {
     // MARK: - Setup UI
     
     private func setupUI() {
-        brandStack.addArrangedSubview(brandLabel)
-        brandStack.addArrangedSubview(verifiedIcon)
+        [
+            brandLabel,
+            verifiedIcon
+        ].forEach { brandStack.addArrangedSubview($0) }
         
-        infoStack.addArrangedSubview(nameLabel)
-        infoStack.addArrangedSubview(sizeLabel)
+        [
+            nameLabel,
+            sizeLabel
+        ].forEach { infoStack.addArrangedSubview($0) }
         
-        contentView.addSubview(productImageView)
-        contentView.addSubview(brandStack)
-        contentView.addSubview(moreButton)
-        contentView.addSubview(infoStack)
-        contentView.addSubview(priceLabel)
+        [
+            productImageView,
+            brandStack,
+            moreButton,
+            infoStack,
+            priceLabel
+        ].forEach { contentView.addSubview($0) }
     }
     
     // MARK: - Constraints
@@ -166,5 +172,16 @@ final class BagItemCell: UITableViewCell {
     
     @objc private func moreTapped() {
         delegate?.bagItemCellDidTapMore(basketId: basketId)
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        productImageView.image = nil
+        brandLabel.text = nil
+        nameLabel.text = nil
+        sizeLabel.text = nil
+        priceLabel.text = nil
+        delegate = nil
+        basketId = 0
     }
 }

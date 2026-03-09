@@ -1,10 +1,3 @@
-//
-//  SceneDelegate.swift
-//  Tuks-E-Commerce
-//
-//  Created by Narmin Alasova on 04.02.26.
-//
-
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {

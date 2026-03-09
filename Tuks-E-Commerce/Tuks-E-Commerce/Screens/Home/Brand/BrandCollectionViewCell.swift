@@ -3,7 +3,7 @@ import SnapKit
 
 final class BrandCollectionViewCell: UICollectionViewCell {
 
-    static let identifier = "BrandCollectionViewCell"
+    static let identifier = String(describing: BrandCollectionViewCell.self)
 
     // MARK: - UI Elements
 
@@ -78,5 +78,11 @@ final class BrandCollectionViewCell: UICollectionViewCell {
         if let companyLogo = brand.logo {
             brandImageView.loadImage(fullURL: companyLogo)
         }
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        brandImageView.image = nil
+        nameLabel.text = nil
     }
 }

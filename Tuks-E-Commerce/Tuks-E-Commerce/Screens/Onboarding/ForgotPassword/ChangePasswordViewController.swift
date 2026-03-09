@@ -1,8 +1,10 @@
 import UIKit
 import SnapKit
 
-class ChangePasswordController: UIViewController {
+final class ChangePasswordController: UIViewController {
     
+    // MARK: - UI Elements
+
     private let backButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(systemName: "chevron.left"), for: .normal)
@@ -93,16 +95,28 @@ class ChangePasswordController: UIViewController {
         return button
     }()
     
-    private let submitButton: UIButton = {
+    private let submitButton: MainButton = {
         let button = MainButton(text: "Submit")
         button.isEnabled = false
         button.alpha = 0.5
         return button
     }()
     
-    private var isPasswordVisible = false
+    // MARK: - Properties
     
-    let viewModel: ChangePasswordViewModel
+    private var isPasswordVisible = false
+    private let viewModel: ChangePasswordViewModel
+    
+    // MARK: - Init
+
+    init(viewModel: ChangePasswordViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+    
+    // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -110,28 +124,21 @@ class ChangePasswordController: UIViewController {
         setupConstraints()
         setupActions()
         bindViewModel()
-        
-        codeTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        passwordTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
     }
     
-    init(viewModel: ChangePasswordViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
+    // MARK: - Setup
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     private func setupUI() {
         view.backgroundColor = .accent
         navigationItem.hidesBackButton = true
         
         codeContainerView.addSubview(codeTextField)
-        passwordContainerView.addSubview(passwordTextField)
-        passwordContainerView.addSubview(togglePasswordButton)
-            
+        
+        [
+            passwordTextField,
+            togglePasswordButton
+        ].forEach { passwordContainerView.addSubview($0) }
+        
         [
             backButton,
             closeButton,
@@ -142,63 +149,56 @@ class ChangePasswordController: UIViewController {
             passwordLabel,
             passwordContainerView,
             submitButton
-        ].forEach(view.addSubview)
+        ].forEach { view.addSubview($0) }
     }
     
     private func setupConstraints() {
         backButton.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
             make.leading.equalToSuperview().offset(20)
-            make.width.height.equalTo(24)
+            make.size.equalTo(24)
         }
         
         closeButton.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).offset(20)
             make.trailing.equalToSuperview().offset(-20)
-            make.width.height.equalTo(24)
+            make.size.equalTo(24)
         }
         
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(closeButton.snp.bottom).offset(40)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         descriptionLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(16)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         codeLabel.snp.makeConstraints { make in
             make.top.equalTo(descriptionLabel.snp.bottom).offset(24)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         codeContainerView.snp.makeConstraints { make in
             make.top.equalTo(codeLabel.snp.bottom).offset(8)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
             make.height.equalTo(56)
         }
         
         codeTextField.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(16)
-            make.trailing.equalToSuperview().offset(-16)
+            make.leading.trailing.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
         }
         
         passwordLabel.snp.makeConstraints { make in
             make.top.equalTo(codeContainerView.snp.bottom).offset(24)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
         }
         
         passwordContainerView.snp.makeConstraints { make in
             make.top.equalTo(passwordLabel.snp.bottom).offset(8)
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
             make.height.equalTo(56)
         }
         
@@ -211,23 +211,14 @@ class ChangePasswordController: UIViewController {
         togglePasswordButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-16)
             make.centerY.equalToSuperview()
-            make.width.height.equalTo(24)
+            make.size.equalTo(24)
         }
         
         submitButton.snp.makeConstraints { make in
-            make.leading.equalToSuperview().offset(24)
-            make.trailing.equalToSuperview().offset(-24)
+            make.leading.trailing.equalToSuperview().inset(24)
             make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-20)
             make.height.equalTo(56)
         }
-    }
-    
-    @objc private func textFieldDidChange() {
-        let hasCode = !(codeTextField.text?.isEmpty ?? true)
-        let hasPassword = !(passwordTextField.text?.isEmpty ?? true)
-        let isValid = hasCode && hasPassword
-        submitButton.isEnabled = isValid
-        submitButton.alpha = isValid ? 1.0 : 0.5
     }
     
     private func setupActions() {
@@ -235,7 +226,24 @@ class ChangePasswordController: UIViewController {
         closeButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
         togglePasswordButton.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
         submitButton.addTarget(self, action: #selector(submitTapped), for: .touchUpInside)
+        [codeTextField, passwordTextField].forEach {
+            $0.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
+        }
     }
+    
+    // MARK: - Bind
+    
+    private func bindViewModel() {
+        viewModel.changePasswordSuccess = { [weak self] in
+            self?.navigateToLogin()
+        }
+        
+        viewModel.errorHandling = { [weak self] errorText in
+            self?.showError(message: errorText)
+        }
+    }
+    
+    // MARK: - Actions
     
     @objc private func backTapped() {
         navigationController?.popViewController(animated: true)
@@ -254,11 +262,7 @@ class ChangePasswordController: UIViewController {
     
     @objc private func submitTapped() {
         guard let code = codeTextField.text, !code.isEmpty,
-              let password = passwordTextField.text, !password.isEmpty
-        
-        else {
-            return
-        }
+              let password = passwordTextField.text, !password.isEmpty else { return }
         
         let requestBody = ForgotPasswordConfirmRequest(
             email: viewModel.email,
@@ -268,28 +272,18 @@ class ChangePasswordController: UIViewController {
         viewModel.confirmPassword(body: requestBody)
     }
     
-    private func bindViewModel() {
-        viewModel.changePasswordSuccess = { [weak self] in
-            guard let self else { return }
-            navigateToLogin()
-        }
-        
-        viewModel.errorHandling = { [weak self] errorText in
-            guard let self else { return }
-            
-            self.present(
-                AlertHelper.showAlert(title: "Warning!", message: errorText),
-                animated: true
-            )
-        }
+    @objc private func textFieldDidChange() {
+        let isValid = !(codeTextField.text?.isEmpty ?? true) && !(passwordTextField.text?.isEmpty ?? true)
+        submitButton.isEnabled = isValid
+        submitButton.alpha = isValid ? 1.0 : 0.5
     }
     
     private func navigateToLogin() {
         navigationController?.popToRootViewController(animated: true)
-        
-        NotificationCenter.default.post(
-            name: .passwordChanged,
-            object: nil
-        )
+        NotificationCenter.default.post(name: .passwordChanged, object: nil)
+    }
+    
+    private func showError(message: String) {
+        present(AlertHelper.showAlert(title: "Warning!", message: message), animated: true)
     }
 }

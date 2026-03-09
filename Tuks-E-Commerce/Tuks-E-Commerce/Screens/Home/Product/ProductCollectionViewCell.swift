@@ -3,7 +3,7 @@ import SnapKit
 
 final class ProductCollectionViewCell: UICollectionViewCell {
 
-    static let identifier = "ProductCollectionViewCell"
+    static let identifier = String(describing: ProductCollectionViewCell.self)
 
     var onFavoriteTapped: (() -> Void)?
     var isWishList = false
@@ -81,11 +81,7 @@ final class ProductCollectionViewCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        contentView.backgroundColor = .white
-        contentView.layer.cornerRadius = 16
-        contentView.clipsToBounds = true
-        
-        addSubviews()
+        setupUI()
         setupConstraints()
         favoriteButton.addTarget(self, action: #selector(favoriteTapped), for: .touchUpInside)
     }
@@ -96,21 +92,26 @@ final class ProductCollectionViewCell: UICollectionViewCell {
 
     // MARK: - Setup
 
-    private func addSubviews() {
-        containerView.addSubview(productImageView)
+    private func setupUI() {
+        contentView.backgroundColor = .white
+        contentView.layer.cornerRadius = 16
+        contentView.clipsToBounds = true
         
+        containerView.addSubview(productImageView)
         favoriteContainerView.addSubview(favoriteButton)
         containerView.addSubview(favoriteContainerView)
+
+        [
+            brandLabel,
+            verifiedIcon
+        ].forEach { brandStackView.addArrangedSubview($0) }
         
-        contentView.addSubview(containerView)
-        
-        contentView.addSubview(nameLabel)
-        
-        brandStackView.addArrangedSubview(brandLabel)
-        brandStackView.addArrangedSubview(verifiedIcon)
-        contentView.addSubview(brandStackView)
-        
-        contentView.addSubview(priceLabel)
+        [
+            containerView,
+            nameLabel,
+            brandStackView,
+            priceLabel
+        ].forEach { contentView.addSubview($0) }
     }
 
     private func setupConstraints() {
@@ -154,6 +155,8 @@ final class ProductCollectionViewCell: UICollectionViewCell {
             make.bottom.lessThanOrEqualToSuperview().inset(12)
         }
     }
+    
+    // MARK: - Actions
 
     @objc private func favoriteTapped() {
         onFavoriteTapped?()
@@ -167,7 +170,7 @@ final class ProductCollectionViewCell: UICollectionViewCell {
     func configure(with product: ProductProtocol) {
         nameLabel.text = product.name
         brandLabel.text = product.companyName
-        priceLabel.text = "$" + String(product.price)
+        priceLabel.text = "$\(product.price)"
         verifiedIcon.isHidden = false
         
         productImageView.loadImage(fullURL: product.mainPhoto)
@@ -182,5 +185,16 @@ final class ProductCollectionViewCell: UICollectionViewCell {
         let heartColor: UIColor = isWishList ? .systemRed : .gray
         favoriteButton.setImage(UIImage(systemName: heartName), for: .normal)
         favoriteButton.tintColor = heartColor
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        productImageView.image = nil
+        nameLabel.text = nil
+        brandLabel.text = nil
+        priceLabel.text = nil
+        isWishList = false
+        onFavoriteTapped = nil
+        setWishListImage()
     }
 }

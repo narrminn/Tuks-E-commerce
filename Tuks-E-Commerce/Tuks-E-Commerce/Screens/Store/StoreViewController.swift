@@ -25,9 +25,11 @@ final class StoreViewController: UIViewController {
         return cv
     }()
     
-    let viewModel: StoreViewModel
-    let wishlistViewModel: WishListViewModel
+    private let viewModel: StoreViewModel
+    private let wishlistViewModel: WishListViewModel
     
+    // MARK: - Init
+
     init(viewModel: StoreViewModel, wishlistViewModel: WishListViewModel) {
         self.viewModel = viewModel
         self.wishlistViewModel = wishlistViewModel
@@ -38,33 +40,20 @@ final class StoreViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // MARK: - Life Cycle
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
         searchView.isEditable = true
         
-        addSubviews()
+        setupUI()
         setupConstraints()
         bindViewModel()
         
         viewModel.search(keyword: searchView.textField.text ?? "")
         
-        
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(reloadStore),
-            name: .wishlistUpdated,
-            object: nil
-        )
-    }
-    
-    @objc private func reloadStore(_ notification: Notification) {
-        guard let productId = notification.userInfo?["productId"] as? Int else { return }
-        
-        if let index = viewModel.productAll.firstIndex(where: { $0.id == productId }) {
-            viewModel.productAll[index].isWishlist.toggle()
-            collectionView.reloadData()
-        }
+        addObservers()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -72,9 +61,10 @@ final class StoreViewController: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: animated)
     }
 
-    private func addSubviews() {
-        view.addSubview(searchView)
-        view.addSubview(collectionView)
+    // MARK: - Setup
+        
+    private func setupUI() {
+        [searchView, collectionView].forEach { view.addSubview($0) }
     }
 
     private func setupConstraints() {
@@ -90,28 +80,39 @@ final class StoreViewController: UIViewController {
         }
     }
     
+    private func addObservers() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(reloadStore),
+            name: .wishlistUpdated,
+            object: nil
+        )
+    }
+    
+    @objc private func reloadStore(_ notification: Notification) {
+        guard let productId = notification.userInfo?["productId"] as? Int,
+              let index = viewModel.productAll.firstIndex(where: { $0.id == productId }) else { return }
+        
+        viewModel.productAll[index].isWishlist.toggle()
+        collectionView.reloadData()
+    }
+    
     private func bindViewModel() {
         viewModel.fetchProductSuccess = { [weak self] in
-            guard let self else { return }
-            self.collectionView.reloadData()
+            self?.collectionView.reloadData()
         }
         
         viewModel.errorHandling = { [weak self] errorText in
-            guard let self else { return }
-            
-            self.present(
-                AlertHelper.showAlert(
-                    title: "Error",
-                    message: "Error happened while load search products"
-                ),
-                animated: true
-            )
+            self?.showError(message: "Error happened while loading search products")
         }
         
         searchView.onTextChanged = { [weak self] keyword in
-            guard let self else { return }
-            viewModel.refreshWishlist(keyword: keyword)
+            self?.viewModel.refreshWishlist(keyword: keyword)
         }
+    }
+    
+    private func showError(message: String) {
+        present(AlertHelper.showAlert(title: "Error", message: message), animated: true)
     }
     
 }
@@ -132,11 +133,11 @@ extension StoreViewController: UICollectionViewDataSource {
             for: indexPath
         ) as? ProductCollectionViewCell else { return UICollectionViewCell() }
         
-        cell.configure(with: viewModel.productAll[indexPath.item])
+        let product = viewModel.productAll[indexPath.item]
+        cell.configure(with: product)
         
         cell.onFavoriteTapped = { [weak self] in
-            guard let self else { return }
-            wishlistViewModel.addWishlist(id: viewModel.productAll[indexPath.item].id)
+            self?.wishlistViewModel.addWishlist(id: product.id)
         }
         
         return cell
@@ -150,19 +151,7 @@ extension StoreViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView,
                         didSelectItemAt indexPath: IndexPath) {
         let product = viewModel.productAll[indexPath.item]
-            let detailVM = ProductDetailViewModel(
-                networkService: DefaultNetworkService(),
-                id: product.id
-            )
-        let detailVC = ProductDetailViewController(
-            viewModel: detailVM,
-            wishlistViewModel: WishListViewModel(
-                networkService: DefaultNetworkService()
-            ),
-            basketViewModel: BasketViewModel(
-                networkService: DefaultNetworkService()
-            )
-        )
+        let detailVC = ProductDetailBuilder.build(productId: product.id)
             navigationController?.pushViewController(detailVC, animated: true)
     }
     

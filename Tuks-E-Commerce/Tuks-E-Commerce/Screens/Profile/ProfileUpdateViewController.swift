@@ -31,29 +31,17 @@ final class ProfileUpdateViewController: UIViewController, UIImagePickerControll
         return view
     }()
     
-    private let nameTextField: UITextField = {
-        CustomTextField(placeholder: "Name", keyboardType: .default)
-    }()
+    private let nameTextField = CustomTextField(placeholder: "Name", keyboardType: .default)
+    private let surnameTextField = CustomTextField(placeholder: "Surname", keyboardType: .default)
+    private let phoneTextField = CustomTextField(placeholder: "Phone", keyboardType: .phonePad)
+    private let birthTextField = CustomTextField(placeholder: "Birth Date", keyboardType: .default)
+    private let saveButton = MainButton(text: "Save")
     
-    private let surnameTextField: UITextField = {
-        CustomTextField(placeholder: "Surname", keyboardType: .default)
-    }()
+    private let viewModel: ProfileViewModel
+    private let fileViewModel: FileUploadViewModel
     
-    private let phoneTextField: UITextField = {
-        CustomTextField(placeholder: "Phone", keyboardType: .phonePad)
-    }()
-    
-    private let birthTextField: UITextField = {
-        CustomTextField(placeholder: "Birth Date", keyboardType: .default)
-    }()
-    
-    private let saveButton: UIButton = {
-        MainButton(text: "Save")
-    }()
-    
-    let viewModel: ProfileViewModel
-    let fileViewModel: FileUploadViewModel
-    
+    // MARK: - Init
+
     init(viewModel: ProfileViewModel, fileViewModel: FileUploadViewModel) {
         self.viewModel = viewModel
         self.fileViewModel = fileViewModel
@@ -68,19 +56,12 @@ final class ProfileUpdateViewController: UIViewController, UIImagePickerControll
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationController?.setNavigationBarHidden(false, animated: true)
-        addSubviews()
+        setupUI()
         setupConstraints()
         bindActions()
         bindViewModel()
-        
         fillUserData()
-        
-        if let profileImage = UserDefaults.standard.string(
-            forKey: UserDefaultsKeys.profilePhotoPath
-        ) {
-            profileImageView.loadImage(url: profileImage)
-        }
+        loadUserinfo()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -93,6 +74,14 @@ final class ProfileUpdateViewController: UIViewController, UIImagePickerControll
         super.viewWillDisappear(animated)
         navigationController?.setNavigationBarHidden(true, animated: animated)
         showTabBar()
+    }
+    
+    private func loadUserinfo() {
+        if let profileImage = UserDefaults.standard.string(
+            forKey: UserDefaultsKeys.profilePhotoPath
+        ) {
+            profileImageView.loadImage(url: profileImage)
+        }
     }
     
     @objc private func profileImageTapped() {
@@ -124,18 +113,21 @@ final class ProfileUpdateViewController: UIViewController, UIImagePickerControll
     
     // MARK: - Setup
     
-    private func addSubviews() {
+    private func setupUI() {
         view.backgroundColor = .systemGray6
         title = "Edit Profile"
         
-        view.addSubview(profileImageView)
-        profileImageView.addSubview(cameraOverlay)
         cameraOverlay.addSubview(cameraIconView)
-        view.addSubview(nameTextField)
-        view.addSubview(surnameTextField)
-        view.addSubview(phoneTextField)
-        view.addSubview(birthTextField)
-        view.addSubview(saveButton)
+        profileImageView.addSubview(cameraOverlay)
+        
+        [
+            profileImageView,
+            nameTextField,
+            surnameTextField,
+            phoneTextField,
+            birthTextField,
+            saveButton
+        ].forEach { view.addSubview($0) }
     }
     
     private func setupConstraints() {
@@ -222,21 +214,11 @@ final class ProfileUpdateViewController: UIViewController, UIImagePickerControll
     
     private func bindViewModel() {
         fileViewModel.photoUploadSuccess = { [weak self] fileUploadResponse in
-            guard let self else { return }
-            
-            self.viewModel.fileUploadResponse = fileUploadResponse
+            self?.viewModel.fileUploadResponse = fileUploadResponse
         }
         
         fileViewModel.errorHandling = { [weak self] errorText in
-            guard let self else { return }
-            
-            self.present(
-                AlertHelper.showAlert(
-                    title: "Warning!",
-                    message: errorText
-                ),
-                animated: true
-            )
+            self?.showError(message: errorText)
         }
         
         viewModel.photoUpdateSuccess = { [weak self] in
@@ -266,15 +248,11 @@ final class ProfileUpdateViewController: UIViewController, UIImagePickerControll
         }
         
         viewModel.errorHandling = { [weak self] errorText in
-            guard let self else { return }
-            
-            self.present(
-                AlertHelper.showAlert(
-                    title: "Warning!",
-                    message: errorText
-                ),
-                animated: true
-            )
+            self?.showError(message: errorText)
         }
+    }
+    
+    private func showError(message: String) {
+        present(AlertHelper.showAlert(title: "Warning!", message: message), animated: true)
     }
 }

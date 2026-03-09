@@ -133,7 +133,7 @@ final class ProductDetailViewController: UIViewController {
 
     private lazy var descriptionLabel: UILabel = {
         let lbl = UILabel()
-        lbl.numberOfLines = 3
+        lbl.numberOfLines = 0
         lbl.font = .systemFont(ofSize: 14)
         lbl.textColor = .darkGray
         lbl.text = ""
@@ -151,15 +151,16 @@ final class ProductDetailViewController: UIViewController {
         return btn
     }()
     
-    let viewModel: ProductDetailViewModel
-    let wishlistViewModel: WishListViewModel
-    let basketViewModel: BasketViewModel
+    private let viewModel: ProductDetailViewModel
+    private let wishlistViewModel: WishListViewModel
+    private let basketViewModel: BasketViewModel
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupUI()
+        setupConstraints()
         bindViewModel()
         viewModel.getProductDetail()
     }
@@ -186,8 +187,128 @@ final class ProductDetailViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    required init?(coder: NSCoder) { fatalError() }
+    
+    // MARK: - Setup
+        
+    private func setupUI() {
+        [
+            mainImageView,
+            thumbnailCollectionView,
+            backButton,
+            favoriteButton,
+            scrollView,
+            addToBagButton
+        ].forEach { view.addSubview($0) }
+        
+        scrollView.addSubview(contentView)
+        contentView.addSubview(infoCard)
+        
+        let brandRow = UIStackView(arrangedSubviews: [brandIcon, brandLabel])
+        brandRow.spacing = 6
+        brandRow.alignment = .center
+        
+        [
+            ratingLabel,
+            shareButton,
+            priceLabel,
+            nameLabel,
+            brandRow,
+            optionsStackView,
+            descriptionTitleLabel,
+            descriptionLabel
+        ].forEach { infoCard.addSubview($0) }
+    }
+    
+    private func setupConstraints() {
+        mainImageView.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview()
+            $0.height.equalTo(400)
+        }
+
+        thumbnailCollectionView.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview().inset(16)
+            $0.bottom.equalTo(mainImageView.snp.bottom).offset(-16)
+            $0.height.equalTo(72)
+        }
+
+        backButton.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).inset(12)
+            $0.leading.equalToSuperview().inset(16)
+            $0.size.equalTo(40)
+        }
+        
+        favoriteButton.snp.makeConstraints {
+            $0.centerY.equalTo(backButton)
+            $0.trailing.equalToSuperview().inset(16)
+            $0.size.equalTo(40)
+        }
+        
+        addToBagButton.snp.makeConstraints {
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.height.equalTo(56)
+        }
+        
+        scrollView.snp.makeConstraints {
+            $0.top.equalTo(mainImageView.snp.bottom)
+            $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalTo(addToBagButton.snp.top).offset(-8)
+        }
+        
+        contentView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+            $0.width.equalTo(scrollView)
+        }
+
+        infoCard.snp.makeConstraints {
+            $0.top.leading.trailing.bottom.equalToSuperview()
+        }
+
+        brandIcon.snp.makeConstraints { $0.size.equalTo(16) }
+
+        ratingLabel.snp.makeConstraints {
+            $0.top.leading.equalToSuperview().inset(20)
+        }
+        
+        shareButton.snp.makeConstraints {
+            $0.centerY.equalTo(ratingLabel)
+            $0.trailing.equalToSuperview().inset(20)
+            $0.size.equalTo(24)
+        }
+        
+        priceLabel.snp.makeConstraints {
+            $0.top.equalTo(ratingLabel.snp.bottom).offset(8)
+            $0.leading.equalToSuperview().inset(20)
+        }
+        
+        nameLabel.snp.makeConstraints {
+            $0.top.equalTo(priceLabel.snp.bottom).offset(12)
+            $0.leading.equalToSuperview().inset(20)
+        }
+        
+        guard let brandRow = infoCard.subviews.compactMap({ $0 as? UIStackView }).first(where: { $0.arrangedSubviews.contains(brandIcon) }) else { return }
+        
+        brandRow.snp.makeConstraints {
+            $0.top.equalTo(nameLabel.snp.bottom).offset(8)
+            $0.leading.equalToSuperview().inset(20)
+        }
+        
+        optionsStackView.snp.makeConstraints {
+            $0.top.equalTo(brandRow.snp.bottom).offset(20)
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
+        
+        descriptionTitleLabel.snp.makeConstraints {
+            $0.top.equalTo(optionsStackView.snp.bottom).offset(20)
+            $0.leading.equalToSuperview().inset(20)
+        }
+        
+        descriptionLabel.snp.makeConstraints {
+            $0.top.equalTo(descriptionTitleLabel.snp.bottom).offset(8)
+            $0.leading.trailing.equalToSuperview().inset(20)
+            $0.bottom.equalToSuperview().inset(20)
+        }
     }
     
     private func bindViewModel() {
@@ -197,15 +318,7 @@ final class ProductDetailViewController: UIViewController {
         }
         
         viewModel.errorHandling = { [weak self] errorText in
-            guard let self else { return }
-            
-            self.present(
-                AlertHelper.showAlert(
-                    title: "Error",
-                    message: "Error happened while load products"
-                ),
-                animated: true
-            )
+            self?.showError(message: "Error happened while loading products")
         }
     }
     
@@ -327,105 +440,6 @@ final class ProductDetailViewController: UIViewController {
         }
     }
 
-    // MARK: - Setup
-    private func setupUI() {
-        view.addSubview(mainImageView)
-        view.addSubview(thumbnailCollectionView)
-        view.addSubview(backButton)
-        view.addSubview(favoriteButton)
-        view.addSubview(scrollView)
-        view.addSubview(addToBagButton)
-        
-        scrollView.addSubview(contentView)
-
-        mainImageView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
-            $0.height.equalTo(400)
-        }
-
-        thumbnailCollectionView.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(16)
-            $0.bottom.equalTo(mainImageView.snp.bottom).offset(-16)
-            $0.height.equalTo(72)
-        }
-
-        backButton.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).inset(12)
-            $0.leading.equalToSuperview().inset(16)
-            $0.size.equalTo(40)
-        }
-        favoriteButton.snp.makeConstraints {
-            $0.centerY.equalTo(backButton)
-            $0.trailing.equalToSuperview().inset(16)
-            $0.size.equalTo(40)
-        }
-        addToBagButton.snp.makeConstraints {
-            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.height.equalTo(56)
-        }
-        scrollView.snp.makeConstraints {
-            $0.top.equalTo(mainImageView.snp.bottom)
-            $0.leading.trailing.equalToSuperview()
-            $0.bottom.equalTo(addToBagButton.snp.top).offset(-8)
-        }
-        
-        contentView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
-            $0.width.equalTo(scrollView)
-        }
-
-        contentView.addSubview(infoCard)
-
-        infoCard.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.trailing.bottom.equalToSuperview()
-        }
-
-        let brandRow = UIStackView(arrangedSubviews: [brandIcon, brandLabel])
-        brandRow.spacing = 6
-        brandRow.alignment = .center
-        brandIcon.snp.makeConstraints { $0.size.equalTo(16) }
-
-        [ratingLabel, shareButton, priceLabel, nameLabel,
-         brandRow, optionsStackView, descriptionTitleLabel, descriptionLabel].forEach { infoCard.addSubview($0) }
-
-        ratingLabel.snp.makeConstraints {
-            $0.top.leading.equalToSuperview().inset(20)
-        }
-        shareButton.snp.makeConstraints {
-            $0.centerY.equalTo(ratingLabel)
-            $0.trailing.equalToSuperview().inset(20)
-            $0.size.equalTo(24)
-        }
-        priceLabel.snp.makeConstraints {
-            $0.top.equalTo(ratingLabel.snp.bottom).offset(8)
-            $0.leading.equalToSuperview().inset(20)
-        }
-        nameLabel.snp.makeConstraints {
-            $0.top.equalTo(priceLabel.snp.bottom).offset(12)
-            $0.leading.equalToSuperview().inset(20)
-        }
-        brandRow.snp.makeConstraints {
-            $0.top.equalTo(nameLabel.snp.bottom).offset(8)
-            $0.leading.equalToSuperview().inset(20)
-        }
-        optionsStackView.snp.makeConstraints {
-            $0.top.equalTo(brandRow.snp.bottom).offset(20)
-            $0.leading.trailing.equalToSuperview().inset(20)
-        }
-        descriptionTitleLabel.snp.makeConstraints {
-            $0.top.equalTo(optionsStackView.snp.bottom).offset(20)
-            $0.leading.equalToSuperview().inset(20)
-        }
-        descriptionLabel.snp.makeConstraints {
-            $0.top.equalTo(descriptionTitleLabel.snp.bottom).offset(8)
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalToSuperview().inset(20)
-
-        }
-    }
-
     // MARK: - Actions
     @objc private func backTapped() {
         navigationController?.popViewController(animated: true)
@@ -456,6 +470,10 @@ final class ProductDetailViewController: UIViewController {
         basketViewModel.addToBasket(
             body: AddToBasketRequest(variantID: variant.id, quantity: 1)
         )
+    }
+    
+    private func showError(message: String) {
+        present(AlertHelper.showAlert(title: "Error", message: message), animated: true)
     }
 }
 
