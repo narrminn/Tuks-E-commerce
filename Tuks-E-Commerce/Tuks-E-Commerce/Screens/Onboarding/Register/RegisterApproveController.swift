@@ -101,9 +101,18 @@ final class RegisterApproveController: UIViewController {
     // MARK: - Setup
 
     private func setupUI() {
-        view.backgroundColor = .accent
+        view.backgroundColor = .systemGray6
         codeContainerView.addSubview(codeTextField)
-        [backButton, titleLabel, descriptionLabel, codeLabel, codeContainerView, helperLabel, continueButton].forEach { view.addSubview($0) }
+        
+        [
+            backButton,
+            titleLabel,
+            descriptionLabel,
+            codeLabel,
+            codeContainerView,
+            helperLabel,
+            continueButton
+        ].forEach { view.addSubview($0) }
     }
     
     private func setupConstraints() {

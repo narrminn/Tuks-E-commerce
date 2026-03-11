@@ -77,8 +77,16 @@ final class ForgotPasswordController: UIViewController {
     // MARK: - Setup
 
     private func setupUI() {
-        view.backgroundColor = .accent
-        [closeButton, titleLabel, descriptionLabel, emailLabel, emailTextField, submitButton].forEach { view.addSubview($0) }
+        view.backgroundColor = .systemGray6
+        
+        [
+            closeButton,
+            titleLabel,
+            descriptionLabel,
+            emailLabel,
+            emailTextField,
+            submitButton
+        ].forEach { view.addSubview($0) }
     }
     
     private func setupConstraints() {

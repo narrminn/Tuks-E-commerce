@@ -42,31 +42,6 @@ final class LoginController: UIViewController {
         return btn
     }()
     
-    private let continueLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Or continue with"
-        label.font = .systemFont(ofSize: 14, weight: .semibold)
-        label.textColor = .label
-        label.textAlignment = .center
-        return label
-    }()
-    
-    private let socialStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .horizontal
-        stack.spacing = 15
-        stack.distribution = .fillEqually
-        return stack
-    }()
-    
-    private let googleContainer = SocialContainerView()
-    private let facebookContainer = SocialContainerView()
-    private let appleContainer = SocialContainerView()
-    
-    private let googleImageView = SocialIconView(named: "google_icon")
-    private let facebookImageView = SocialIconView(named: "facebook_icon")
-    private let appleImageView = SocialIconView(named: "apple_icon")
-    
     // MARK: - Properties
     
     private let viewModel: LoginViewModel
@@ -94,15 +69,20 @@ final class LoginController: UIViewController {
     // MARK: - Setup
 
     private func setupUI() {
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGray6
         
-        [googleImageView, facebookImageView, appleImageView].enumerated().forEach { index, icon in
-            [googleContainer, facebookContainer, appleContainer][index].addSubview(icon)
-        }
+        [
+            emailTextField,
+            passwordTextField
+        ].forEach { fieldsStackView.addArrangedSubview($0) }
         
-        [googleContainer, facebookContainer, appleContainer].forEach { socialStackView.addArrangedSubview($0) }
-        [emailTextField, passwordTextField].forEach { fieldsStackView.addArrangedSubview($0) }
-        [logoImageView, fieldsStackView, forgotPasswordButton, signInButton, createAccountButton, continueLabel, socialStackView].forEach { view.addSubview($0) }
+        [
+            logoImageView,
+            fieldsStackView,
+            forgotPasswordButton,
+            signInButton,
+            createAccountButton
+        ].forEach { view.addSubview($0) }
     }
         
     private func setupConstraints() {
@@ -140,24 +120,6 @@ final class LoginController: UIViewController {
         createAccountButton.snp.makeConstraints { make in
             make.top.equalTo(signInButton.snp.bottom).offset(25)
             make.centerX.equalToSuperview()
-        }
-        
-        continueLabel.snp.makeConstraints { make in
-            make.top.equalTo(createAccountButton.snp.bottom).offset(50)
-            make.centerX.equalToSuperview()
-        }
-        
-        socialStackView.snp.makeConstraints { make in
-            make.top.equalTo(continueLabel.snp.bottom).offset(20)
-            make.horizontalEdges.equalToSuperview().inset(80)
-            make.height.equalTo(50)
-        }
-        
-        [googleImageView, facebookImageView, appleImageView].forEach { icon in
-            icon.snp.makeConstraints { make in
-                make.center.equalToSuperview()
-                make.size.equalTo(50)
-            }
         }
     }
     

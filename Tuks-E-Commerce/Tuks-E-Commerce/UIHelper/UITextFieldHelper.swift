@@ -33,6 +33,7 @@ class CustomTextField: UITextField {
         self.backgroundColor = .white
         self.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 0))
         self.leftViewMode = .always
+        self.tintColor = .black
     }
     
 }

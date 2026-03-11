@@ -17,8 +17,8 @@ final class SplashViewController: UIViewController {
     }
     
     private func setupUI() {
-        view.backgroundColor = .accent
-        
+        view.backgroundColor = .systemGray6
+
         view.addSubview(logoImageView)
         
         logoImageView.snp.makeConstraints { make in

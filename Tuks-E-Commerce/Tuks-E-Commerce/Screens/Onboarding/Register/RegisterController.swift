@@ -56,31 +56,6 @@ final class RegisterController: UIViewController {
         return btn
     }()
     
-    private let continueLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Or continue with"
-        label.font = .systemFont(ofSize: 14, weight: .semibold)
-        label.textColor = .label
-        label.textAlignment = .center
-        return label
-    }()
-    
-    private let socialStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.axis = .horizontal
-        stack.spacing = 15
-        stack.distribution = .fillEqually
-        return stack
-    }()
-    
-    private let googleContainer = SocialContainerView()
-    private let facebookContainer = SocialContainerView()
-    private let appleContainer = SocialContainerView()
-    
-    private let googleImageView = SocialIconView(named: "google_icon")
-    private let facebookImageView = SocialIconView(named: "facebook_icon")
-    private let appleImageView = SocialIconView(named: "apple_icon")
-    
     // MARK: - Properties
     
     private let viewModel: RegisterViewModel
@@ -107,17 +82,28 @@ final class RegisterController: UIViewController {
     // MARK: - Setup
 
     private func setupUI() {
-        view.backgroundColor = .accent
+        view.backgroundColor = .systemGray6
         navigationItem.hidesBackButton = true
         
-        let containers = [googleContainer, facebookContainer, appleContainer]
-        let icons = [googleImageView, facebookImageView, appleImageView]
-        zip(containers, icons).forEach { $0.addSubview($1) }
+        [
+            nameTextField,
+            surnameTextField
+        ].forEach { nameAndSurnameStackView.addArrangedSubview($0) }
         
-        containers.forEach { socialStackView.addArrangedSubview($0) }
-        [nameTextField, surnameTextField].forEach { nameAndSurnameStackView.addArrangedSubview($0) }
-        [phoneNumberTextField, emailTextField, passwordTextField].forEach { fieldsStackView.addArrangedSubview($0) }
-        [titleLabel, subtitleLabel, nameAndSurnameStackView, fieldsStackView, signUpButton, loginButton, continueLabel, socialStackView].forEach { view.addSubview($0) }
+        [
+            phoneNumberTextField,
+            emailTextField,
+            passwordTextField
+        ].forEach { fieldsStackView.addArrangedSubview($0) }
+        
+        [
+            titleLabel,
+            subtitleLabel,
+            nameAndSurnameStackView,
+            fieldsStackView,
+            signUpButton,
+            loginButton
+        ].forEach { view.addSubview($0) }
     }
     
     private func setupConstraints() {
@@ -154,24 +140,6 @@ final class RegisterController: UIViewController {
         loginButton.snp.makeConstraints { make in
             make.top.equalTo(signUpButton.snp.bottom).offset(25)
             make.centerX.equalToSuperview()
-        }
-        
-        continueLabel.snp.makeConstraints { make in
-            make.top.equalTo(loginButton.snp.bottom).offset(50)
-            make.centerX.equalToSuperview()
-        }
-        
-        socialStackView.snp.makeConstraints { make in
-            make.top.equalTo(continueLabel.snp.bottom).offset(20)
-            make.horizontalEdges.equalToSuperview().inset(80)
-            make.height.equalTo(50)
-        }
-        
-        [googleImageView, facebookImageView, appleImageView].forEach { icon in
-            icon.snp.makeConstraints { make in
-                make.center.equalToSuperview()
-                make.size.equalTo(50)
-            }
         }
     }
     

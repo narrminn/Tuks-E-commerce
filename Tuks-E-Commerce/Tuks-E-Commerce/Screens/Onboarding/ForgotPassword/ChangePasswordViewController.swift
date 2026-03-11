@@ -129,7 +129,7 @@ final class ChangePasswordController: UIViewController {
     // MARK: - Setup
 
     private func setupUI() {
-        view.backgroundColor = .accent
+        view.backgroundColor = .systemGray6
         navigationItem.hidesBackButton = true
         
         codeContainerView.addSubview(codeTextField)
